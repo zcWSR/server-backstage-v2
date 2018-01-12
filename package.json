@@ -1,0 +1,20 @@
+{
+  "name": "my-site-backstage-v2",
+  "version": "1.0.0",
+  "description": "mySite's backstage version 2.0",
+  "main": "www.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "api"
+  ],
+  "author": "zcWSR",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "knex": "^0.14.2",
+    "sqlite3": "^3.1.13"
+  }
+}
