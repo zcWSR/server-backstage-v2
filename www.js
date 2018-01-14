@@ -1,16 +1,16 @@
-require('./index.js');
+const app = require('./index.js');
 let args = process.argv;
 let port = 2333;
 
 if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
     port = args[3];
 } else {
-  console.warning('did not find port settings, use default port 2333');
+  console.warn('did not find port settings, use default port 2333');
 }
 
 let server = app.listen(port);
-console.warning(`server in ${process.env.ENV || 'production'} mode`);
-console.warning(`ご注意ください`);
+console.warn(`server in ${process.env.ENV || 'production'} mode`);
+console.warn(`ご注意ください`);
 
 server.on('error', (err) => {
   if (err.syscall !== 'listen') {
