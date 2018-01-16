@@ -1,4 +1,4 @@
 module.exports = {
-    main: require('./MainRoute'),
-    blog: require('./BlogRoute')
+    main: require('./mainRoute'),
+    blog: require('./blogRoute')
 }

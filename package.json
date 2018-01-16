@@ -13,8 +13,12 @@
   "author": "zcWSR",
   "license": "ISC",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-stage-3": "^6.24.1",
     "express": "^4.16.2",
     "knex": "^0.14.2",
-    "sqlite3": "^3.1.13"
+    "moment": "^2.20.1",
+    "sqlite3": "^3.1.13",
+    "uuid": "^3.1.0"
   }
 }
