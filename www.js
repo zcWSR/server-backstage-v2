@@ -7,7 +7,7 @@ let port = 2333;
 if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
     port = args[3];
 } else {
-  console.warn('did not find port settings, use default port 2333');
+  console.warn(`did not find port settings, use default port ${port}`);
 }
 createPostTables();
 let server = app.listen(port);
