@@ -24,9 +24,8 @@ async function insertOne (post) {
  * @param {[{title: string, date: string, categories: string[], labels: string[], section: string, rest: string}]} posts 
  */
 async function insertSome (posts) {
-  for(let post of posts) {
-    await insertOne(post);
-  }
+  let promises = posts.map(post => insertOne(post));
+  return await Promise.all(promises);
 }
 
 /**
@@ -36,8 +35,13 @@ async function insertSome (posts) {
  */
 async function insertOneLabel (labelName, postId) {
   labelName = labelName.toLocaleLowerCase();
-  let data = await db('Label').select('id').where('name', labelName);
-  console.log(data);
+  let labelsFromDB = await db('Label').select('id').where('name', labelName);
+  let labelId
+  if (!labelsFromDB.length) {
+    labelId = await db('Label').insert({ name: labelName });
+  } else {
+  }
+  console.log(labelsFromDB);
 }
 
 /**
