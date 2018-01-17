@@ -16,26 +16,45 @@ const db = knex({
 module.exports.db = db;
 
 module.exports.createPostTables = async () => {
-    await db.schema.createTableIfNotExists('post', table => {
-        console.log('create post table');
-        table.string('id').primary();
+    await db.schema.createTableIfNotExists(`Post`, table => {
+        table.uuid('id').primary();
         table.string('title');
         table.dateTime('date');
         table.text('section');
         table.text('rest');
+    }).catch(err => {
+        console.log(err);
     });
     
-    await db.schema.createTableIfNotExists('category', table => {
-        console.log('create category table');
+    await db.schema.createTableIfNotExists(`Category`, table => {
         table.increments('id').primary();
         table.string('name');
-        table.integer('post_id');
+    }).catch(err => {
+        console.log(err);
+    });
+
+    await db.schema.createTableIfNotExists(`Post_Category_Relation`, table => {
+        table.increments('id').primary();
+        table.string('post_id');
+        table.integer('cate_id');
+        table.foreign('post_id').references('Post.id').onDelete('CASCADE');
+    }).catch(err => {
+        console.log(err);
     });
     
-    await db.schema.createTableIfNotExists('label', table => {
-        console.log('create label table');
+    await db.schema.createTableIfNotExists(`Label`, table => {
         table.increments('id').primary();
         table.string('name');
-        table.integer('post_id');
+    }).catch(err => {
+        console.log(err);
+    });
+
+    await db.schema.createTableIfNotExists(`Post_Label_Relation`, table => {
+        table.increments('id').primary();
+        table.string('post_id');
+        table.integer('label_id');
+        table.foreign('post_id').references('Post.id').onDelete('CASCADE');
+    }).catch(err => {
+        console.log(err);
     });
 }
