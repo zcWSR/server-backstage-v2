@@ -8,7 +8,7 @@ const db = require('../db').db;
  */
 async function insertOne (post) {
   let postId = uuid();
-  await db('post').insert({
+  await db('Post').insert({
     id: postId,
     title: post.title,
     date: moment(post.dateTime).toDate(),
@@ -16,7 +16,8 @@ async function insertOne (post) {
     rest: post.rest
   });
 
-  await insertOneLabel(post.labels[0], postId);
+  let labelPromises = post.labels.map(label => insertOneLabel(label, postId));
+  return await Promise.all(labelPromises);
 }
 
 /**
@@ -35,13 +36,19 @@ async function insertSome (posts) {
  */
 async function insertOneLabel (labelName, postId) {
   labelName = labelName.toLocaleLowerCase();
-  let labelsFromDB = await db('Label').select('id').where('name', labelName);
-  let labelId
-  if (!labelsFromDB.length) {
-    labelId = await db('Label').insert({ name: labelName });
+  let labelFromDB = await db('Label').first('id').where('name', labelName);
+  console.log(labelFromDB);
+  let labelId;
+  if (labelFromDB) {
+    labelId = labelFromDB.id;
   } else {
+    labelId = await db('Label').insert({ name: labelName });
+    labelId = parseInt(labelId);
   }
-  console.log(labelsFromDB);
+  await db('Post_Label_Relation').insert({
+    post_id: postId,
+    label_id: labelId
+  });
 }
 
 /**
