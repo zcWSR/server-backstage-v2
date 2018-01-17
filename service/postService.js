@@ -17,7 +17,8 @@ async function insertOne (post) {
   });
 
   let labelPromises = post.labels.map(label => insertOneLabel(label, postId));
-  return await Promise.all(labelPromises);
+  let categoryPromises = post.categories.map(cate => insertOneCate(cate, postId));
+  return await Promise.all([...labelPromises, ... categoryPromises]);
 }
 
 /**
@@ -37,7 +38,6 @@ async function insertSome (posts) {
 async function insertOneLabel (labelName, postId) {
   labelName = labelName.toLocaleLowerCase();
   let labelFromDB = await db('Label').first('id').where('name', labelName);
-  console.log(labelFromDB);
   let labelId;
   if (labelFromDB) {
     labelId = labelFromDB.id;
@@ -56,13 +56,34 @@ async function insertOneLabel (labelName, postId) {
  * @param {string} cateName 类别名
  * @param {string} postId 文章id
  */
-async function insertOneCate (cateName, postId) {
-
+async function inserOneCate (categoryName, postId) {
+  categoryName = categoryName.toLocaleLowerCase();
+  let categoryFromDB = await db('Category').first('id').where('name', categoryName);
+  let categoryId;
+  if (categoryFromDB) {
+    categoryId = categoryFromDB.id;
+  } else {
+    categoryId = await db('Category').insert({ name: categoryName });
+    categoryName = parseInt(categoryName);
+  }
+  await db('Post_Category_Relation').insert({
+    post_id: postId,
+    cate_id: categoryId
+  });
 }
+
+async function queryOneById (id) {
+  return await db('Post');
+}
+
+async function qunerySome (page, pageSize) {
+  return await db('Post');
+} 
 
 
 module.exports = {
   insertOne,
   insertSome,
-  
+  queryOneById,
+  qunerySome,
 }

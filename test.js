@@ -3,5 +3,6 @@ const { createPostTables, db } = require('./db');
 const PostService = require('./service/postService');
 const postJson = require('./post-data');
 
-// createPostTables();
-PostService.insertOne(postJson[0]);
+createPostTables().then(() => {
+    PostService.insertOne(postJson[0]);
+});
