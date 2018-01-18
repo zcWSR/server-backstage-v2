@@ -9,7 +9,6 @@ if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
 } else {
   console.warn(`did not find port settings, use default port ${port}`);
 }
-createPostTables();
 let server = app.listen(port);
 console.warn(`server in ${process.env.ENV || 'production'} mode`);
 console.warn(`ご注意ください`);

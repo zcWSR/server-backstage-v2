@@ -22,6 +22,7 @@ module.exports.createPostTables = async () => {
         table.dateTime('date');
         table.text('section');
         table.text('rest');
+        table.integer('cate_id');
     }).catch(err => {
         console.log(err);
     });
@@ -29,15 +30,6 @@ module.exports.createPostTables = async () => {
     await db.schema.createTableIfNotExists(`Category`, table => {
         table.increments('id').primary();
         table.string('name');
-    }).catch(err => {
-        console.log(err);
-    });
-
-    await db.schema.createTableIfNotExists(`Post_Category_Relation`, table => {
-        table.increments('id').primary();
-        table.string('post_id');
-        table.integer('cate_id');
-        table.foreign('post_id').references('Post.id').onDelete('CASCADE');
     }).catch(err => {
         console.log(err);
     });
