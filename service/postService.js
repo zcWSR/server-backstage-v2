@@ -91,12 +91,43 @@ async function queryOrInsertOneCate (cateName) {
 }
 
 async function queryOneById (id) {
+  let rows = await db.raw(
+    `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
+      inner join Post_Label_Relation, Label, Category 
+          on
+              Post.id = "${id}" AND
+              Post_Label_Relation.post_id = "${id}" AND
+              Post_Label_Relation.label_id = Label.id AND
+              Category.id = Post.cate_id`
+  );
 
+  if (!rows.length) return null;
+
+  return rows.reduce((prev, cur) => {
+    if (!prev) {
+      prev = {
+        id: cur.id,
+        title: cur.title,
+        date: cur.date,
+        section: cur.section,
+        rest: cur.rest,
+        categories: [cur.category],
+        labels: cur.label === ' ' ? [] : [cur.label]
+      };
+    } else {
+      prev.labels.push(cur.label);
+    }
+
+    return prev;
+  }, null);
 }
 
-
+/**
+ * 查找一部分博文，页大小 = 5
+ * @param {number} page 页
+ */
 async function querySome (page) {
-  let rowList = await db.raw(
+  let rows = await db.raw(
     `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
       inner join Post_Label_Relation, Label, Category 
           on
@@ -108,7 +139,7 @@ async function querySome (page) {
     order by Post.date desc`
   );
 
-  return rowList.reduce((prev, cur) => {
+  return rows.reduce((prev, cur) => {
     if (!prev.length || prev[prev.length - 1].id !== cur.id) {
       prev.push({
         id: cur.id,

@@ -12,6 +12,16 @@ blogRouter.get('/posts', (req, res) => {
   getPosts(page).then((data) => res.jsonp(data));
 });
 
+blogRouter.get('/post/:id', (req, res) => {
+  let id = req.params.id;
+  if (!id)
+    res.status(404).jsonp({ error: `not found post with _id: ${id}` });
+  else
+    PostService.queryOneById(id)
+        .then(post => res.jsonp({ result: post }))
+        .catch(error => res.status(500).jsonp({ error: error }));
+})
+
 async function getPosts(page) {
   let posts = await PostService.querySome(page);
   let count = await PostService.countAll();
