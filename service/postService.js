@@ -157,9 +157,25 @@ async function querySome (page) {
   }, []);
 } 
 
-async function countAll() {
+async function countAll () {
   let data = await db('Post').count('id').first();
-  return data[Object.keys(data)[0]];
+  return data.id;
+}
+
+async function queryAllCates () {
+  let rows = await db('Category').select('name');
+  return rows.reduce((prev, cur) => {
+    prev.push(cur.name);
+    return prev;
+  }, []);
+}
+
+async function queryAllLabels () {
+  let rows = await db('Label').select('name');
+  return rows.reduce((prev, cur) => {
+    prev.push(cur.name);
+    return prev;
+  }, []);
 }
 
 module.exports = {
@@ -167,5 +183,7 @@ module.exports = {
   insertSome,
   queryOneById,
   querySome,
-  countAll
+  countAll,
+  queryAllCates,
+  queryAllLabels,
 }
