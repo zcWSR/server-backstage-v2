@@ -3,13 +3,13 @@ const { get } = require('http');
 const host = 'konachan.com';
 
 function getTagList(query) {
-  return this.jsonClient(`/tag.json?${getParamString(query)}`);
+  return jsonClient(`/tag.json?${getParamString(query)}`);
 
 }
 
 function getImageList(query) {
   'rating:safe+'
-  return this.jsonClient(`/post.json?${getParamString(query)}`);
+  return jsonClient(`/post.json?${getParamString(query)}`);
 }
 
 function getParamString(query) {
@@ -23,7 +23,7 @@ function getParamString(query) {
 function jsonClient(url) {
   return new Promise((resolve, reject) => {
     get({
-      hostname: this.host,
+      hostname: host,
       path: url,
       port: '80',
       method: 'GET',

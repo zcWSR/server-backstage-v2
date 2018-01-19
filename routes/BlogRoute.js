@@ -61,7 +61,7 @@ blogRouter.get('/resume', (req, res) => {
   });
 });
 
-BlogRoutes.get('/imgs', (req, res) => {
+blogRouter.get('/imgs', (req, res) => {
   fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
       if (err)
           res.status(500).jsonp({ error: err });
@@ -70,7 +70,7 @@ BlogRoutes.get('/imgs', (req, res) => {
   });
 });
 
-BlogRoutes.get('/imgs/:name', (req, res) => {
+blogRouter.get('/imgs/:name', (req, res) => {
   fs.readFile(path.resolve(__dirname, `../src/img/${req.params.name}`), (err, data) => {
       if (err)
           res.status(500).jsonp({ error: err });

@@ -165,7 +165,8 @@ async function countAll () {
 async function queryAllCates () {
   let rows = await db('Category').select('name');
   return rows.reduce((prev, cur) => {
-    prev.push(cur.name);
+    if (cur.name !== ' ')
+      prev.push(cur.name);
     return prev;
   }, []);
 }
@@ -173,7 +174,8 @@ async function queryAllCates () {
 async function queryAllLabels () {
   let rows = await db('Label').select('name');
   return rows.reduce((prev, cur) => {
-    prev.push(cur.name);
+    if (cur.name !== ' ')
+      prev.push(cur.name);
     return prev;
   }, []);
 }
