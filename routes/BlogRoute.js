@@ -26,7 +26,7 @@ blogRouter.get('/post/:id', (req, res) => {
 
 async function getPosts(page) {
   let posts = await PostService.querySome(page);
-  let count = await PostService.countAll();
+  let count = await PostService.countAllPost();
   return {
     count: count,
     result: posts

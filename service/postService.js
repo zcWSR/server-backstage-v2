@@ -157,7 +157,7 @@ async function querySome (page) {
   }, []);
 } 
 
-async function countAll () {
+async function countAllPost () {
   let data = await db('Post').count('id').first();
   return data.id;
 }
@@ -185,7 +185,7 @@ module.exports = {
   insertSome,
   queryOneById,
   querySome,
-  countAll,
+  countAllPost,
   queryAllCates,
   queryAllLabels,
 }
