@@ -14,7 +14,7 @@ blogRouter.get('/posts', (req, res) => {
   getPosts(page).then((data) => res.jsonp(data));
 });
 
-blogRouter.get('/post/:id', (req, res) => {
+blogRouter.get('/posts/:id', (req, res) => {
   let id = req.params.id;
   if (!id)
     res.status(404).jsonp({ error: `not found post with _id: ${id}` });
