@@ -106,7 +106,7 @@ async function queryOneById (id) {
   return rows.reduce((prev, cur) => {
     if (!prev) {
       prev = {
-        id: cur.id,
+        _id: cur.id,
         title: cur.title,
         date: cur.date,
         section: cur.section,
@@ -142,7 +142,7 @@ async function querySome (page) {
   return rows.reduce((prev, cur) => {
     if (!prev.length || prev[prev.length - 1].id !== cur.id) {
       prev.push({
-        id: cur.id,
+        _id: cur.id,
         title: cur.title,
         date: cur.date,
         section: cur.section,
