@@ -159,7 +159,7 @@ async function querySome (page) {
 
 async function countAllPost () {
   let data = await db('Post').count('id').first();
-  return data.id;
+  return data['count(`id`)'];
 }
 
 async function queryAllCates () {
