@@ -40,8 +40,6 @@ require('./db').createBlogTables()
   process.on('uncaughtException', (err) => {
     console.error(`Uncaugh Exception: \n${err.message}`);
   })
-}).catch(err => {
-  console.log(err);
 });
 
 
