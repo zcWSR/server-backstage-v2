@@ -140,7 +140,7 @@ async function querySome (page) {
   );
 
   return rows.reduce((prev, cur) => {
-    if (!prev.length || prev[prev.length - 1].id !== cur.id) {
+    if (!prev.length || prev[prev.length - 1]._id !== cur.id) {
       prev.push({
         _id: cur.id,
         title: cur.title,
