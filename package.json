@@ -8,13 +8,18 @@
   },
   "keywords": [
     "express",
+    "SQLite",
     "api"
   ],
+  "bin": {
+    "ms-cli": "./bin/cli.js"
+  },
   "author": "zcWSR",
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-stage-3": "^6.24.1",
+    "blessed": "^0.1.81",
     "express": "^4.16.2",
     "knex": "^0.14.2",
     "moment": "^2.20.1",
