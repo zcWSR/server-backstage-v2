@@ -38,46 +38,56 @@ blogRouter.get('/categories', (req, res) => {
     .then(data => res.jsonp({ result: data }));
 });
 
+blogRouter.get('/categories/with-count', (req, res) => {
+  PostService.queryAllCatesWithCount()
+    .then(data => res.jsonp({ result: data }));
+});
+
 blogRouter.get('/labels', (req, res) => {
   PostService.queryAllLabels()
+    .then(data => res.jsonp({ result: data }));
+});
+
+blogRouter.get('/labels/with-count', (req, res) => {
+  PostService.queryAllLabelsWithCount()
     .then(data => res.jsonp({ result: data }));
 });
 
 blogRouter.get('/about', (req, res) => {
   fs.readFile(path.resolve(__dirname, '../src/about.md'), (err, data) => {
     if (err)
-        res.status(500).jsonp({ error: err });
+      res.status(500).jsonp({ error: err });
     else
-        res.jsonp({ result: data.toString() });
+      res.jsonp({ result: data.toString() });
   });
 });
 
 blogRouter.get('/resume', (req, res) => {
   fs.readFile(path.resolve(__dirname, '../src/resume.md'), (err, data) => {
     if (err)
-        res.status(500).jsonp({ error: err });
+      res.status(500).jsonp({ error: err });
     else
-        res.jsonp({ result: data.toString() });
+      res.jsonp({ result: data.toString() });
   });
 });
 
 blogRouter.get('/imgs', (req, res) => {
   fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
-      if (err)
-          res.status(500).jsonp({ error: err });
-      else
-          res.jsonp({ result: files.filter(file => file !== '.DS_Store') });
+    if (err)
+      res.status(500).jsonp({ error: err });
+    else
+      res.jsonp({ result: files.filter(file => file !== '.DS_Store') });
   });
 });
 
 blogRouter.get('/imgs/:name', (req, res) => {
   fs.readFile(path.resolve(__dirname, `../src/img/${req.params.name}`), (err, data) => {
-      if (err)
-          res.status(500).jsonp({ error: err });
-      else {
-          res.writeHead(200, { 'Content-Type': 'image/jpeg' });
-          res.end(data, 'binary');
-      }
+    if (err)
+      res.status(500).jsonp({ error: err });
+    else {
+      res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+      res.end(data, 'binary');
+    }
   });
 });
 

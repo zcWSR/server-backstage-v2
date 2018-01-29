@@ -12,7 +12,7 @@ function createPostFile(path, post) {
     let top = '---\n' +
     'title: ' + post.title + '\n' +
     'date: ' + post.date + '\n' +
-    'categories: ' + post.categories.join(' ') + '\n' +
+    'category: ' + post.category + '\n' +
     'labels: ' + post.labels.join(' ') + '\n' +
     '---\n\n';
     if (post.section) {

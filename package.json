@@ -4,6 +4,7 @@
   "description": "mySite's backstage version 2.0",
   "main": "www.js",
   "scripts": {
+    "start": "node www.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,11 +20,16 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-stage-3": "^6.24.1",
-    "blessed": "^0.1.81",
+    "chalk": "^2.3.0",
+    "commander": "^2.13.0",
     "express": "^4.16.2",
+    "inquirer": "^5.0.1",
     "knex": "^0.14.2",
     "moment": "^2.20.1",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
     "sqlite3": "^3.1.13",
+    "text-table": "^0.2.0",
     "uuid": "^3.1.0"
   }
 }

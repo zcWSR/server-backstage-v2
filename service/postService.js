@@ -6,7 +6,7 @@ const db = require('../db').db;
 const pageSize = 5;
 /**
  * 插入一条
- * @param {{ title: string, date: string, categories: string[], labels: string[], section: string, rest: string }} post 文章对象
+ * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string }} post 文章对象
  */
 async function insertOne (post) {
   let postId = uuid();
@@ -36,7 +36,7 @@ async function insertOne (post) {
 
 /**
  * 插入多条
- * @param {[{title: string, date: string, categories: string[], labels: string[], section: string, rest: string}]} posts 
+ * @param {[{title: string, date: string, category: string, labels: string[], section: string, rest: string}]} posts 
  */
 async function insertSome (posts) {
   for(let post of posts) {
@@ -158,8 +158,8 @@ async function querySome (page) {
 } 
 
 async function countAllPost () {
-  let data = await db('Post').count('id').first();
-  return data['count(`id`)'];
+  let data = await db('Post').count('id as count').first();
+  return data.count;
 }
 
 async function queryAllCates () {
@@ -171,6 +171,16 @@ async function queryAllCates () {
   }, []);
 }
 
+async function queryAllCatesWithCount () {
+  return await db('Category')
+                .select('Category.name').as('category')
+                .count('Post.cate_id as count')
+                .innerJoin('Post', function () {
+                  this.on('Post.cate_id', '=', 'Category.id')
+                })
+              .groupBy('Category.id');
+}
+
 async function queryAllLabels () {
   let rows = await db('Label').select('name');
   return rows.reduce((prev, cur) => {
@@ -178,6 +188,17 @@ async function queryAllLabels () {
       prev.push(cur.name);
     return prev;
   }, []);
+}
+
+async function queryAllLabelsWithCount () {
+  let rows = await db('Label')
+                .select('Label.name').as('label')
+                .count('Post_Label_Relation.post_id as count')
+                .innerJoin('Post_Label_Relation', function () {
+                  this.on('Post_Label_Relation.label_id', '=', 'Label.id')
+                })
+              .groupBy('Label.id');
+  return rows.filter(item => item !== ' ');
 }
 
 module.exports = {
@@ -188,4 +209,6 @@ module.exports = {
   countAllPost,
   queryAllCates,
   queryAllLabels,
+  queryAllCatesWithCount,
+  queryAllLabelsWithCount
 }

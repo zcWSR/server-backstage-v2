@@ -14,7 +14,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/www.js"
+            "program": "${workspaceFolder}/www.js",
+            "env": {
+                "ENV": "develop"
+            }
         }
     ]
 }
