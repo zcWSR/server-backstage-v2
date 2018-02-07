@@ -1,6 +1,7 @@
 const fs = require('fs');
 const POST_REGEXP = /(^---*\s*\n(\w+:.*\n)+---*\s*\n)/ig;
 const MORE_REGEXP = /\n\s*<!--\s*more\s*-->\s*\n/i;
+const HEADER_REGEXP = /(\w+):\s(.*)\n/ig;
 
 /**
  * 
@@ -8,7 +9,7 @@ const MORE_REGEXP = /\n\s*<!--\s*more\s*-->\s*\n/i;
  * @param {string} post 文章对象
  */
 function createPostFile(path, post) {
-  return new Promise((reslove, reject) => {
+  return new Promise((resolve, reject) => {
     let top = '---\n' +
     'title: ' + post.title + '\n' +
     'date: ' + post.date + '\n' +
@@ -39,36 +40,47 @@ function getPostFileInfo (filePath) {
     fs.readFile(filePath, (error, data) => {
       if (error) reject(error);
       else {
-        let post;
+        let post = {};
         let meta = data.toString();
         let tops = meta.match(POST_REGEXP);
         if (!tops || tops.length === 0) {
           reject(new Error('invalid header infos'));
         } else {
           let top = tops[0];
+          let match;
+          while(match = HEADER_REGEXP.exec(top)) {
+            if (match[2])
+              post[match[1]] = match[2];
+            else
+              post[match[1]] = '';
+          }
 
-          top.match(/(\w+:.*)\n/ig).map(value => value.trim()).forEach(value => {
-            let index = value.search(':');
-            if (index === -1) return ;
-            let key = value.slice(0, index).trim();
-            value = value.slice(index + 1, value.length).trim();
-            switch (key) {
-              case 'title': 
-                post.title = value.trim();
-                break;
-              case 'date':
-                post.date = new Date(value);
-                break;
-              case 'category':
-                post.category = value;
-                break;
-              case 'label':
-                post[key] = value.trim().split(' ').filter(v => v);
-                break;
-              default:
-                break;
-            }
-          });
+          post.title = post.title.trim();
+          post.labels = post.labels.trim().split(' ').filter(v => v);
+          
+          // top.match(/(\w+:\s.*)\n/ig).map(value => value.trim()).forEach(item => {
+            //   let index = item.search(':');
+            //   if (index === -1) return ;
+            //   let key = value.slice(0, index).trim();
+            //   let value = value.slice(index + 1, value.length).trim();
+            //   console.log(key, value);
+            //   switch (key) {
+              //     case 'title': 
+              //       post.title = value.trim();
+              //       break;
+              //     case 'date':
+              //       post.date = new Date(value);
+              //       break;
+              //     case 'category':
+              //       post.category = value;
+              //       break;
+              //     case 'label':
+              //       post[key] = value.trim().split(' ').filter(v => v);
+              //       break;
+              //     default:
+              //       break;
+              //   }
+              // });
         }
         post = Object.assign({}, post, splitContent(meta, true));
         resolve(post);
@@ -80,7 +92,7 @@ function getPostFileInfo (filePath) {
 /**
  * 
  * @param {string} content 文章内容
- * @param {string} withHeader 是否带文章头
+ * @param {string} withHeader 传进来的content是否包含文章头
  */
 function splitContent (content, withHeader = false) {
   if (withHeader)

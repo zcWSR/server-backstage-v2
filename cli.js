@@ -5,7 +5,7 @@ const table = require('text-table');
 const fs = require('fs');
 const os = require('os');
 const { prompt, Questions, Separator, ui } = require('inquirer');
-const { exec } = require('child_process');
+const child_process = require('child_process');
 
 const Util = require('./util');
 const FileService = require('./service/fileService');
@@ -38,7 +38,7 @@ program
       )
       .then(() => {
         console.log('已创建名为: ' + chalk.green(`${title}`) + ' 的文章\n位于: ' + chalk.green(`${filePath}`));
-        exec(`open '${filePath}'`);
+        child_process.exec(`open '${filePath}'`);
         process.exit();
       })
       .catch(error => {
@@ -54,7 +54,7 @@ program
   .action((path, options) => {
     filePath = path;
     // title = path.substr(path.lastIndexOf('/') + 1).split('.')[0];
-    if (!existsSync(path)) {
+    if (!fs.existsSync(path)) {
       console.log(chalk.red('error: file not found!'));
       return;
     }
@@ -63,17 +63,15 @@ program
     // } else {
       FileService.getPostFileInfo(filePath)
         .then(post => {
-          ({ title, date, categories, labels, section, rest } = post);
+          ({ title, date, category, labels, section, rest } = post);
         })
         .then(confirmAll)
         .then(doUpLoad)
         .then(() => {
-          mongoDB.disconnect();
           process.exit();
         })
         .catch(err => {
           console.log(chalk.bold.underline.red(err));
-          mongoDB.disconnect();
           process.exit();
         });
     // }
@@ -89,7 +87,6 @@ program
       .then(posts => {
         if (posts.length == 0) {
           console.log(chalk.magenta('文章不存在'));
-          mongoDB.disconnect();
           process.exit();
         } else {
           let questions = [
@@ -126,13 +123,11 @@ program
                 clearInterval(interval);
                 loadingUI.updateBottomBar(chalk.green('下载完成!'));
                 console.log(`保存在: ${path}`);
-                exec(`open '${path}'`);
-                mongoDB.disconnect();
+                child_process.exec(`open '${path}'`);
                 process.exit();
               })
               .catch(error => {
                 console.log(chalk.bold.underline.red(error));
-                mongoDB.disconnect();
                 process.exit();
               })
             return;
@@ -174,7 +169,6 @@ async function infoComfirm() {
 //           PostService.update(post.title, post)
 //             .then(() => {
 //               console.log(chalk.green('更新成功'));
-//               mongoDB.disconnect();
 //               process.exit();
 //             })
 
@@ -182,7 +176,6 @@ async function infoComfirm() {
 //     })
 //     .catch(err => {
 //       console.log(chalk.bold.underline.red(err));
-//       mongoDB.disconnect();
 //       process.exit();
 //     });
 // }
@@ -237,15 +230,10 @@ async function selectLabels(_labels) {
     }
   ];
   let answers = await prompt(questions);
-  for (let label of answers.lables) {
-    labels.push(label);
+  labels.push(...answers.labels)
+  if (answers.otherLabels.trim()) {
+    labels.concat(...answers.otherLabels.split(' '));
   }
-  if (answers.otherLabels) {
-    for (let label of answers.otherLabels.split(' ').filter(item => item !== '' && item !== ' ')) {
-      labels.push(label);
-    }
-  }
-  labels = de_duplication(labels);
   let flag = await prompt([{
     type: 'confirm',
     name: 'check',
@@ -259,7 +247,7 @@ async function selectLabels(_labels) {
 async function confirmAll() {
   let allChoices = [
     ['title', chalk.green(title)],
-    ['category', chalk.green(categories)],
+    ['category', chalk.green(category)],
     ['label', chalk.green(labels)],
     ['time', chalk.green(date)]
   ];
@@ -288,13 +276,13 @@ function doUpLoad() {
   let i = 0;
   let loadingUI = new ui.BottomBar({ bottomBar: loader[i % 4] });
   setInterval(() => { loadingUI.updateBottomBar(loader[i++ % 4]); }, 200);
-  let content = readFileSync(filePath).toString();
-  let split = FileService.splitContent(content, true);
-  section = split.section;
-  rest = split.rest;
+  // let content = readFileSync(filePath).toString();
+  // let split = FileService.splitContent(content, true);
+  // section = split.section;
+  // rest = split.rest;
 
   return Util
-    .uploadPost({ title, date, categories, labels, section, rest })
+    .uploadPost({ title, date, category, labels, section, rest })
     .then(() => {
       loadingUI.updateBottomBar(chalk.green('上传成功!'));
       return;
@@ -332,15 +320,6 @@ function doUpLoad() {
 //   return choices;
 // }
 
-function de_duplication(array) {
-  let result = [];
-  for (let a of array) {
-    if (result.indexOf(a) == -1)
-      result.push(a);
-  }
-  return result;
-}
-
 /**
  * 将这样格式的原始数据: 
  * 
@@ -375,12 +354,14 @@ function formatChoices(options) {
     return prev;
   }, [options.headers.map(item => item.name), '']);
   let choiceTable = table(choices, { align });
+  choiceTable = choiceTable.split('\n');
   choiceTable[0] = new Separator(choiceTable[0]);
   choiceTable[1] = new Separator();
   return choiceTable.reduce((prev, cur, i) => {
     if (i === 0 || i === 1) {
       prev.push(cur);
     } else {
+      const { key, data } = options;
       prev.push({
         name: cur,
         value: data[i - 2][key] || data[i - 2]._id || data[i - 2].id

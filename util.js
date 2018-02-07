@@ -1,12 +1,12 @@
-const request = require('request-promise')
+const request = require('request-promise-native');
 const db = require('./db').db;
 
-const blogHost;
+let blogHost;
 
 if (process.env.ENV !== 'production') {
-    blogHost = 'localhost:2333/blog'
+    blogHost = 'http://127.0.0.1:2333/blog'
 } else {
-    blogHost = 'blog-api.zcwsr.com';
+    blogHost = 'http://blog-api.zcwsr.com';
 }
 
 async function fetchCategoryListWithCount () {
@@ -20,7 +20,7 @@ async function fetchCategoryListWithCount () {
 
 async function fetchLabelListwithCount () {
     const meta = await request({
-        uri: `${blogHost}/lables/with-count`,
+        uri: `${blogHost}/labels/with-count`,
         json: true
     });
 

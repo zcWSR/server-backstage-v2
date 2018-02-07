@@ -21,7 +21,8 @@ blogRouter.post('/posts/upload', (req, res) => {
     .catch(error => res.status(500).jsonp({ error: error }));
 });
 
-blogRouter.get('posts/by-title/:title', (req, res) => {
+blogRouter.get('/posts/by-title/:title', (req, res) => {
+  console.log(req.params.title);
   PostService.queryByTitle(req.params.title)
     .then(data => res.jsonp({ result: data }))
     .catch(error => res.status(500).jsonp(error));

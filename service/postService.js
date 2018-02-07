@@ -10,7 +10,7 @@ const pageSize = 5;
  */
 async function insertOne (post) {
   let postId = uuid();
-  let cateId = await queryOrInsertOneCate(post.categories[0]);
+  let cateId = await queryOrInsertOneCate(post.category);
 
   if (!post.labels.length) {
     post.labels = [' '];
@@ -208,7 +208,7 @@ async function queryAllLabelsWithCount () {
                   this.on('Post_Label_Relation.label_id', '=', 'Label.id')
                 })
               .groupBy('Label.id');
-  return rows.filter(item => item !== ' ');
+  return rows.filter(item => item.name !== ' ');
 }
 
 module.exports = {
