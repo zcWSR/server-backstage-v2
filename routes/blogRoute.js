@@ -14,6 +14,19 @@ blogRouter.get('/posts', (req, res) => {
   getPosts(page).then((data) => res.jsonp(data));
 });
 
+blogRouter.post('/posts/upload', (req, res) => {
+  const post = req.body;
+  PostService.insertOne(post)
+    .then(() => res.jsonp({ result: 'ok' }))
+    .catch(error => res.status(500).jsonp({ error: error }));
+});
+
+blogRouter.get('posts/by-title/:title', (req, res) => {
+  PostService.queryByTitle(req.params.title)
+    .then(data => res.jsonp({ result: data }))
+    .catch(error => res.status(500).jsonp(error));
+})
+
 blogRouter.get('/posts/:id', (req, res) => {
   let id = req.params.id;
   if (!id)

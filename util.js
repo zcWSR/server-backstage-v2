@@ -11,7 +11,7 @@ if (process.env.ENV !== 'production') {
 
 async function fetchCategoryListWithCount () {
     const meta = await request({
-        url: `${blogHost}/categories/with-count`,
+        uri: `${blogHost}/categories/with-count`,
         json: true
     });
 
@@ -20,7 +20,34 @@ async function fetchCategoryListWithCount () {
 
 async function fetchLabelListwithCount () {
     const meta = await request({
-        url: `${blogHost}/lables/with-count`,
+        uri: `${blogHost}/lables/with-count`,
+        json: true
+    });
+
+    return meta.result || null;
+}
+
+async function uploadPost(post) {
+    const meta = await request({
+        method: 'POST',
+        uri: `${blogHost}/posts/upload`,
+        body: post,
+        json: true
+    });
+
+    return meta.result || null;
+}
+
+async function fetchOnePostById (id) {
+    const meta = await request({
+        uri: `${blogHost}/posts/${id}`,
+        json: true
+    });
+} 
+
+async function fetchPostsByTitle (title) {
+    const meta = await request({
+        uri: `${blogHost}/posts/by-title/${title}`,
         json: true
     });
 
@@ -29,5 +56,8 @@ async function fetchLabelListwithCount () {
 
 module.exports = {
     fetchCategoryListWithCount,
-    fetchLabelListwithCount
+    fetchLabelListwithCount,
+    uploadPost,
+    fetchOnePostById,
+    fetchPostsByTitle
 }

@@ -157,6 +157,16 @@ async function querySome (page) {
   }, []);
 } 
 
+/**
+ * 仅查找id和title (不分页)
+ */
+async function queryByTitle (title) {
+  return await db('post')
+                .select(['id', 'title'])
+                .where('title', 'like', `%${title}%`)
+              .orderBy('date', 'desc');
+}
+
 async function countAllPost () {
   let data = await db('Post').count('id as count').first();
   return data.count;
@@ -206,6 +216,7 @@ module.exports = {
   insertSome,
   queryOneById,
   querySome,
+  queryByTitle,
   countAllPost,
   queryAllCates,
   queryAllLabels,

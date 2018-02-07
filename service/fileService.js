@@ -93,7 +93,7 @@ function splitContent (content, withHeader = false) {
 }
 
 
-function updataPostTime(filePath, mtime) {
+function updatePostTime(filePath, mtime) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, (error, data) => {
       if (error) reject(error);
@@ -130,5 +130,5 @@ module.exports = {
   createPostFile,
   getPostFileInfo,
   splitContent,
-  updataPostTime
+  updatePostTime
 }

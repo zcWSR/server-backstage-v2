@@ -3,6 +3,7 @@ const moment = require('moment');
 const chalk = require('chalk')
 const table = require('text-table');
 const fs = require('fs');
+const os = require('os');
 const { prompt, Questions, Separator, ui } = require('inquirer');
 const { exec } = require('child_process');
 
@@ -16,7 +17,7 @@ let labels = [];
 let date = moment().format('YYYY-MM-DD HH:mm:ss');
 let section = '';
 let rest = '';
-program.version('0.6.0');
+program.version('2.0.0');
 
 program
   .command('new <postName>').alias('n')
@@ -25,17 +26,16 @@ program
     if (!name)
       title = 'newPost';
     title = name;
-    filePath = `/Users/zcwsr/Documents/blog/${title}.md`;
+    filePath = `${os.homedir()}/Documents/blog/${title}.md`;
     if (fs.existsSync(filePath)) {
       console.log(chalk.magenta('发现重复文件'));
-      filePath = `/Users/zcwsr/Documents/blog/${title}_other.md`
+      filePath = `${os.homedir()}/Documents/blog/${title}_other.md`
       console.log(chalk.magenta(`修改文件路径为: ${filePath}`));
     }
     infoComfirm()
-      .then(() => {
-        return FileService.
-          createPostFile(filePath, { title, date, category, labels })
-      })
+      .then(() => 
+        FileService.createPostFile(filePath, { title, date, category, labels })
+      )
       .then(() => {
         console.log('已创建名为: ' + chalk.green(`${title}`) + ' 的文章\n位于: ' + chalk.green(`${filePath}`));
         exec(`open '${filePath}'`);
@@ -49,18 +49,18 @@ program
 
 program
   .command('upload <filePath>').alias('u')
-  .option('--update', '更新同名文章（如果不存在同名，新建）')
+  // .option('--update', '更新同名文章（如果不存在同名，新建）')
   .description('上传文章至数据库')
   .action((path, options) => {
     filePath = path;
-    title = path.substr(path.lastIndexOf('/') + 1).split('.')[0];
+    // title = path.substr(path.lastIndexOf('/') + 1).split('.')[0];
     if (!existsSync(path)) {
       console.log(chalk.red('error: file not found!'));
       return;
     }
-    if (options.update) {
-      update();
-    } else {
+    // if (options.update) {
+    //   update();
+    // } else {
       FileService.getPostFileInfo(filePath)
         .then(post => {
           ({ title, date, categories, labels, section, rest } = post);
@@ -76,7 +76,7 @@ program
           mongoDB.disconnect();
           process.exit();
         });
-    }
+    // }
     return;
   });
 
@@ -85,11 +85,10 @@ program
   .command('download <postName>').alias('d')
   .description('下载文章')
   .action(name => {
-    PostService
-      .queryByTitle(name)
+    Util.fetchPostsByTitle(name)
       .then(posts => {
         if (posts.length == 0) {
-          console.log(chalk.magenta('文章不存在'))
+          console.log(chalk.magenta('文章不存在'));
           mongoDB.disconnect();
           process.exit();
         } else {
@@ -98,14 +97,18 @@ program
               type: 'list',
               name: 'postId',
               message: '选择post',
-              choices: formatePostChoices(posts)
+              choices: formatChoices({
+                headers: [{ name: 'id', keyName: 'id' }, { name: '标题', keyName: 'title' }],
+                data: posts,
+                key: 'id'
+              })
             }
           ];
           return prompt(questions);
         }
       })
-      .then((answer: any) => {
-        PostService
+      .then((answer) => {
+        Util.fetchOnePostById
           .queryOnePostById(answer.postId.toString())
           .then(post => {
             let loader = [
@@ -123,7 +126,7 @@ program
                 clearInterval(interval);
                 loadingUI.updateBottomBar(chalk.green('下载完成!'));
                 console.log(`保存在: ${path}`);
-                exec(`\nmacdown '${path}'`);
+                exec(`open '${path}'`);
                 mongoDB.disconnect();
                 process.exit();
               })
@@ -153,36 +156,36 @@ async function infoComfirm() {
   return await confirmAll();
 }
 
-function update() {
-  FileService.getPostFileInfo(filePath)
-    .then(post => {
-      prompt([{
-        type: 'confirm',
-        name: 'check',
-        message: `使用创建时间(Y)还是修改时间(N)修改文章信息(默认return为创建时间)?`,
-        default: true
-      }])
-        .then(flag => flag['check'])
-        .then(check => {
-          date = check ? post.date : statSync(filePath).mtime;
-          return check ? '' : FileService.updatePostTime(filePath, date);
-        })
-        .then(() => {
-          PostService.update(post.title, post)
-            .then(() => {
-              console.log(chalk.green('更新成功'));
-              mongoDB.disconnect();
-              process.exit();
-            })
+// function update() {
+//   FileService.getPostFileInfo(filePath)
+//     .then(post => {
+//       prompt([{
+//         type: 'confirm',
+//         name: 'check',
+//         message: `使用创建时间(Y)还是修改时间(N)修改文章信息(默认return为创建时间)?`,
+//         default: true
+//       }])
+//         .then(flag => flag['check'])
+//         .then(check => {
+//           date = check ? post.date : statSync(filePath).mtime;
+//           return check ? '' : FileService.updatePostTime(filePath, date);
+//         })
+//         .then(() => {
+//           PostService.update(post.title, post)
+//             .then(() => {
+//               console.log(chalk.green('更新成功'));
+//               mongoDB.disconnect();
+//               process.exit();
+//             })
 
-        })
-    })
-    .catch(err => {
-      console.log(chalk.bold.underline.red(err));
-      mongoDB.disconnect();
-      process.exit();
-    });
-}
+//         })
+//     })
+//     .catch(err => {
+//       console.log(chalk.bold.underline.red(err));
+//       mongoDB.disconnect();
+//       process.exit();
+//     });
+// }
 
 
 async function selectCates(cates) {
@@ -290,8 +293,8 @@ function doUpLoad() {
   section = split.section;
   rest = split.rest;
 
-  return PostService
-    .insertPost(title, date, categories, labels, section, rest)
+  return Util
+    .uploadPost({ title, date, categories, labels, section, rest })
     .then(() => {
       loadingUI.updateBottomBar(chalk.green('上传成功!'));
       return;
@@ -340,6 +343,8 @@ function de_duplication(array) {
 
 /**
  * 将这样格式的原始数据: 
+ * 
+ *  ```
  *  {
  *    headers: [{name: 'id', keyName: 'id', align: 'l'}, { name: '标签', keyName: 'name', align: 'l'}],
  *    data: [
@@ -348,11 +353,14 @@ function de_duplication(array) {
  *    ],
  *    key: 'id'
  *  }
- *  格式化的:
- *  id   标签
- *  ===============
- *  111  222
- *  333  444
+ *  ```
+ * 
+ *  格式化为:
+ * 
+ *  | id | 标签 |
+ *  |:-- |:-- |
+ *  | 111 | 222 |
+ *  | 333 | 444 |
  *  
  * @param {{headers: [{name: string, keyName?: string, align?: string}], data: [{}], key: string}} options
  */
