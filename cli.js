@@ -276,11 +276,6 @@ function doUpLoad() {
   let i = 0;
   let loadingUI = new ui.BottomBar({ bottomBar: loader[i % 4] });
   setInterval(() => { loadingUI.updateBottomBar(loader[i++ % 4]); }, 200);
-  // let content = readFileSync(filePath).toString();
-  // let split = FileService.splitContent(content, true);
-  // section = split.section;
-  // rest = split.rest;
-
   return Util
     .uploadPost({ title, date, category, labels, section, rest })
     .then(() => {
@@ -290,35 +285,6 @@ function doUpLoad() {
 
 
 }
-
-// function formateChoices(arrays: any[], label: string) {
-//   let choiceTable: any[] = arrays
-//     .map(value => [value['name'], value['count']]);
-//   choiceTable.unshift([label, `此${label}的文章数`]);
-//   choiceTable = table(choiceTable, { align: ['l', 'r'] }).split('\n');
-//   let tableHead = new Separator(choiceTable[0]);
-//   choiceTable.splice(0, 1);
-//   let choices: any[] = choiceTable.map((name, i) => {
-//     return { name: name, value: arrays[i].name, short: arrays[i].name }
-//   });
-//   choices.unshift(tableHead, new Separator());
-//   return choices;
-// }
-
-// function formatePostChoices(posts: IPost[]) {
-//   let choiceTable: any[] = posts.map(post => {
-//     return [post._id, post.title, post.date];
-//   });
-//   choiceTable.unshift(['id', 'title', '创建时间']);
-//   choiceTable = table(choiceTable, { align: ['l', 'l', 'l'] }).split('\n');
-//   let tableHead = new Separator(choiceTable[0]);
-//   choiceTable.splice(0, 1);
-//   let choices: any[] = choiceTable.map((value, i) => {
-//     return { name: value, value: posts[i]._id };
-//   });
-//   choices.unshift(tableHead, new Separator());
-//   return choices;
-// }
 
 /**
  * 将这样格式的原始数据: 

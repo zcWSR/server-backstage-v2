@@ -54,33 +54,8 @@ function getPostFileInfo (filePath) {
             else
               post[match[1]] = '';
           }
-
           post.title = post.title.trim();
           post.labels = post.labels.trim().split(' ').filter(v => v);
-          
-          // top.match(/(\w+:\s.*)\n/ig).map(value => value.trim()).forEach(item => {
-            //   let index = item.search(':');
-            //   if (index === -1) return ;
-            //   let key = value.slice(0, index).trim();
-            //   let value = value.slice(index + 1, value.length).trim();
-            //   console.log(key, value);
-            //   switch (key) {
-              //     case 'title': 
-              //       post.title = value.trim();
-              //       break;
-              //     case 'date':
-              //       post.date = new Date(value);
-              //       break;
-              //     case 'category':
-              //       post.category = value;
-              //       break;
-              //     case 'label':
-              //       post[key] = value.trim().split(' ').filter(v => v);
-              //       break;
-              //     default:
-              //       break;
-              //   }
-              // });
         }
         post = Object.assign({}, post, splitContent(meta, true));
         resolve(post);
