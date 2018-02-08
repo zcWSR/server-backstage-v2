@@ -7,7 +7,7 @@ import os from 'os';
 import { prompt, Questions, Separator, ui } from 'inquirer';
 import child_process from 'child_process';
 
-import * as Util from './util';
+import * as Request from './utils/request';
 import * as FileService from './service/fileService';
 
 let filePath = '';
@@ -83,7 +83,7 @@ program
   .command('download <postName>').alias('d')
   .description('下载文章')
   .action(name => {
-    Util.fetchPostsByTitle(name)
+    Request.fetchPostsByTitle(name)
       .then(posts => {
         if (posts.length == 0) {
           console.log(chalk.magenta('文章不存在'));
@@ -105,7 +105,7 @@ program
         }
       })
       .then((answer) => {
-        Util.fetchOnePostById
+        Request.fetchOnePostById
           .queryOnePostById(answer.postId.toString())
           .then(post => {
             let loader = [
@@ -143,9 +143,9 @@ program.parse(process.argv);
 
 
 async function infoComfirm() {
-  let cateList = await Util.fetchCategoryListWithCount();
+  let cateList = await Request.fetchCategoryListWithCount();
   await selectCates(cateList);
-  let labelList = await Util.fetchLabelListwithCount();
+  let labelList = await Request.fetchLabelListwithCount();
   await selectLabels(labelList);
   console.log('=====================');
   return await confirmAll();
@@ -276,7 +276,7 @@ function doUpLoad() {
   let i = 0;
   let loadingUI = new ui.BottomBar({ bottomBar: loader[i % 4] });
   setInterval(() => { loadingUI.updateBottomBar(loader[i++ % 4]); }, 200);
-  return Util
+  return Request
     .uploadPost({ title, date, category, labels, section, rest })
     .then(() => {
       loadingUI.updateBottomBar(chalk.green('上传成功!'));

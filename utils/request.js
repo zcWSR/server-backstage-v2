@@ -1,12 +1,4 @@
 import * as request from 'request-promise-native';
-import fs from 'fs';
-import path from 'path';
-import requireAll from 'require-all';
-import { Router } from 'express';
-import express from 'express';
-
-
-import { db } from './db';
 
 let blogHost;
 
@@ -59,35 +51,4 @@ export async function fetchPostsByTitle (title) {
     });
 
     return meta.result || null;
-}
-
-/**
- * 自动扫描routes下的文件夹,并以文件夹名作为根路由
- * @param {express} app 
- */
-export function setRoutes(app) {
-    const routerNames = fs.readdirSync(path.resolve(__dirname, 'routes'));
-    for (let routerName of routerNames) {
-        const router = Router();
-        const dirPath = path.resolve(__dirname, 'routes', routerName);
-        execRequires(requireAll(dirPath), router);
-        app.use(`/${routerName}`, router);
-    }
-}
-
-/**
- * 执行从require-all中导出的函数
- * @param {{}} requireMap requireMap
- * @param {*} params 待传入的参数
- */
-export function execRequires(requireMap, params) {
-    for (let key of Object.keys(requireMap)) {
-      const func = requireMap[key];
-      switch (typeof func) {
-        case 'function':
-            func(params); break;
-        case 'object':
-            execRequires(func, params); break;
-      }
-    }
 }

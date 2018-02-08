@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser'
 
-import { setRoutes } from './util';
+import { setRoutes } from './utils/route';
 import { createBlogTables } from './db';
 
 const app = express();
