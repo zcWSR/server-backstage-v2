@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 const POST_REGEXP = /(^---*\s*\n(\w+:.*\n)+---*\s*\n)/ig;
 const MORE_REGEXP = /\n\s*<!--\s*more\s*-->\s*\n/i;
 const HEADER_REGEXP = /(\w+):\s(.*)\n/ig;
@@ -8,7 +8,7 @@ const HEADER_REGEXP = /(\w+):\s(.*)\n/ig;
  * @param {string} path 文件路径
  * @param {string} post 文章对象
  */
-function createPostFile(path, post) {
+export function createPostFile(path, post) {
   return new Promise((resolve, reject) => {
     let top = '---\n' +
     'title: ' + post.title + '\n' +
@@ -35,7 +35,7 @@ function createPostFile(path, post) {
  * 
  * @param {string} path 文章路径
  */
-function getPostFileInfo (filePath) {
+export function getPostFileInfo (filePath) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, (error, data) => {
       if (error) reject(error);
@@ -69,7 +69,7 @@ function getPostFileInfo (filePath) {
  * @param {string} content 文章内容
  * @param {string} withHeader 传进来的content是否包含文章头
  */
-function splitContent (content, withHeader = false) {
+export function splitContent (content, withHeader = false) {
   if (withHeader)
     content = content.replace(POST_REGEXP, '');
   let split = content.split(MORE_REGEXP);
@@ -80,7 +80,7 @@ function splitContent (content, withHeader = false) {
 }
 
 
-function updatePostTime(filePath, mtime) {
+export function updatePostTime(filePath, mtime) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, (error, data) => {
       if (error) reject(error);
@@ -111,11 +111,4 @@ function updatePostTime(filePath, mtime) {
       })
     });
   return promise;
-}
-
-module.exports = {
-  createPostFile,
-  getPostFileInfo,
-  splitContent,
-  updatePostTime
 }

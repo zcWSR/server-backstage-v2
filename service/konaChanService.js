@@ -1,13 +1,13 @@
-const { get } = require('http');
+import { get } from 'http';
 
 const host = 'konachan.com';
 
-function getTagList(query) {
+export function getTagList(query) {
   return jsonClient(`/tag.json?${getParamString(query)}`);
 
 }
 
-function getImageList(query) {
+export function getImageList(query) {
   'rating:safe+'
   return jsonClient(`/post.json?${getParamString(query)}`);
 }
@@ -51,9 +51,4 @@ function jsonClient(url) {
         })
       })
   })
-}
-
-module.exports = {
-  getImageList,
-  getTagList
 }

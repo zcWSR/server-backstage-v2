@@ -1,5 +1,12 @@
-const request = require('request-promise-native');
-const db = require('./db').db;
+import * as request from 'request-promise-native';
+import fs from 'fs';
+import path from 'path';
+import requireAll from 'require-all';
+import { Router } from 'express';
+import express from 'express';
+
+
+import { db } from './db';
 
 let blogHost;
 
@@ -9,7 +16,7 @@ if (process.env.ENV !== 'production') {
     blogHost = 'http://blog-api.zcwsr.com';
 }
 
-async function fetchCategoryListWithCount () {
+export async function fetchCategoryListWithCount () {
     const meta = await request({
         uri: `${blogHost}/categories/with-count`,
         json: true
@@ -18,7 +25,7 @@ async function fetchCategoryListWithCount () {
     return meta.result || null;
 }
 
-async function fetchLabelListwithCount () {
+export async function fetchLabelListwithCount () {
     const meta = await request({
         uri: `${blogHost}/labels/with-count`,
         json: true
@@ -27,7 +34,7 @@ async function fetchLabelListwithCount () {
     return meta.result || null;
 }
 
-async function uploadPost(post) {
+export async function uploadPost(post) {
     const meta = await request({
         method: 'POST',
         uri: `${blogHost}/posts/upload`,
@@ -38,14 +45,14 @@ async function uploadPost(post) {
     return meta.result || null;
 }
 
-async function fetchOnePostById (id) {
+export async function fetchOnePostById (id) {
     const meta = await request({
         uri: `${blogHost}/posts/${id}`,
         json: true
     });
 } 
 
-async function fetchPostsByTitle (title) {
+export async function fetchPostsByTitle (title) {
     const meta = await request({
         uri: `${blogHost}/posts/by-title/${title}`,
         json: true
@@ -54,10 +61,33 @@ async function fetchPostsByTitle (title) {
     return meta.result || null;
 }
 
-module.exports = {
-    fetchCategoryListWithCount,
-    fetchLabelListwithCount,
-    uploadPost,
-    fetchOnePostById,
-    fetchPostsByTitle
+/**
+ * 自动扫描routes下的文件夹,并以文件夹名作为根路由
+ * @param {express} app 
+ */
+export function setRoutes(app) {
+    const routerNames = fs.readdirSync(path.resolve(__dirname, 'routes'));
+    for (let routerName of routerNames) {
+        const router = Router();
+        const dirPath = path.resolve(__dirname, 'routes', routerName);
+        execRequires(requireAll(dirPath), router);
+        app.use(`/${routerName}`, router);
+    }
+}
+
+/**
+ * 执行从require-all中导出的函数
+ * @param {{}} requireMap requireMap
+ * @param {*} params 待传入的参数
+ */
+export function execRequires(requireMap, params) {
+    for (let key of Object.keys(requireMap)) {
+      const func = requireMap[key];
+      switch (typeof func) {
+        case 'function':
+            func(params); break;
+        case 'object':
+            execRequires(func, params); break;
+      }
+    }
 }

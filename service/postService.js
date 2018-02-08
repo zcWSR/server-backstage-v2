@@ -1,14 +1,13 @@
-const uuid = require('uuid/v1');
-const moment = require('moment');
+import uuid from 'uuid/v1';
 
-const db = require('../db').db;
+import { db } from '../db';
 
 const pageSize = 5;
 /**
  * 插入一条
  * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string }} post 文章对象
  */
-async function insertOne (post) {
+export async function insertOne (post) {
   let postId = uuid();
   let cateId = await queryOrInsertOneCate(post.category);
 
@@ -38,7 +37,7 @@ async function insertOne (post) {
  * 插入多条
  * @param {[{title: string, date: string, category: string, labels: string[], section: string, rest: string}]} posts 
  */
-async function insertSome (posts) {
+export async function insertSome (posts) {
   for(let post of posts) {
     await insertOne(post);
   }
@@ -52,7 +51,7 @@ async function insertSome (posts) {
  * @param {string} labelName 标签名
  * @param {string} postId 文章id
  */
-async function insertOneLabel (labelName, postId) {
+export async function insertOneLabel (labelName, postId) {
   labelName = labelName.toLocaleLowerCase();
   let labelFromDB = await db('Label').first('id').where('name', labelName);
   let labelId;
@@ -78,7 +77,7 @@ async function insertOneLabel (labelName, postId) {
  * 查询或新加一个类别
  * @param {string} cateName 类别名
  */
-async function queryOrInsertOneCate (cateName) {
+export async function queryOrInsertOneCate (cateName) {
   let categoryFromDB = await db('Category').first('id').where('name', cateName);
   if (categoryFromDB) {
     console.log(`cate: ${cateName} 存在, id: ${categoryFromDB.id}`)
@@ -90,7 +89,7 @@ async function queryOrInsertOneCate (cateName) {
   }
 }
 
-async function queryOneById (id) {
+export async function queryOneById (id) {
   let rows = await db.raw(
     `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
       inner join Post_Label_Relation, Label, Category 
@@ -126,7 +125,7 @@ async function queryOneById (id) {
  * 查找一部分博文，页大小 = 5
  * @param {number} page 页
  */
-async function querySome (page) {
+export async function querySome (page) {
   let rows = await db.raw(
     `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
       inner join Post_Label_Relation, Label, Category 
@@ -160,19 +159,19 @@ async function querySome (page) {
 /**
  * 仅查找id和title (不分页)
  */
-async function queryByTitle (title) {
+export async function queryByTitle (title) {
   return await db('post')
                 .select(['id', 'title'])
                 .where('title', 'like', `%${title}%`)
               .orderBy('date', 'desc');
 }
 
-async function countAllPost () {
+export async function countAllPost () {
   let data = await db('Post').count('id as count').first();
   return data.count;
 }
 
-async function queryAllCates () {
+export async function queryAllCates () {
   let rows = await db('Category').select('name');
   return rows.reduce((prev, cur) => {
     if (cur.name !== ' ')
@@ -181,7 +180,7 @@ async function queryAllCates () {
   }, []);
 }
 
-async function queryAllCatesWithCount () {
+export async function queryAllCatesWithCount () {
   return await db('Category')
                 .select('Category.name').as('category')
                 .count('Post.cate_id as count')
@@ -191,7 +190,7 @@ async function queryAllCatesWithCount () {
               .groupBy('Category.id');
 }
 
-async function queryAllLabels () {
+export async function queryAllLabels () {
   let rows = await db('Label').select('name');
   return rows.reduce((prev, cur) => {
     if (cur.name !== ' ')
@@ -200,7 +199,7 @@ async function queryAllLabels () {
   }, []);
 }
 
-async function queryAllLabelsWithCount () {
+export async function queryAllLabelsWithCount () {
   let rows = await db('Label')
                 .select('Label.name').as('label')
                 .count('Post_Label_Relation.post_id as count')
@@ -209,17 +208,4 @@ async function queryAllLabelsWithCount () {
                 })
               .groupBy('Label.id');
   return rows.filter(item => item.name !== ' ');
-}
-
-module.exports = {
-  insertOne,
-  insertSome,
-  queryOneById,
-  querySome,
-  queryByTitle,
-  countAllPost,
-  queryAllCates,
-  queryAllLabels,
-  queryAllCatesWithCount,
-  queryAllLabelsWithCount
 }

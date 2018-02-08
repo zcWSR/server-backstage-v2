@@ -1,11 +1,11 @@
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-const knex = require('knex');
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
+import knex from 'knex';
 
 // const projectDir = path.resolve(__dirname, '../');
 const dbFilePath = path.resolve(__dirname, 'db.sqlite');
-const db = knex({
+export const db = knex({
   client: 'sqlite3',
   connection: {
     filename: dbFilePath
@@ -14,7 +14,7 @@ const db = knex({
 });
 
 
-async function createPostTable() {
+export async function createPostTable() {
   return await db.schema.createTableIfNotExists(`Post`, table => {
     table.uuid('id').primary();
     table.string('title');
@@ -29,7 +29,7 @@ async function createPostTable() {
   });
 }
 
-async function createCategoryTable() {
+export async function createCategoryTable() {
   return await db.schema.createTableIfNotExists(`Category`, table => {
     table.increments('id').primary();
     table.string('name');
@@ -40,7 +40,7 @@ async function createCategoryTable() {
   });
 }
 
-async function createLabelTable() {
+export async function createLabelTable() {
   return await db.schema.createTableIfNotExists(`Label`, table => {
     table.increments('id').primary();
     table.string('name');
@@ -51,7 +51,7 @@ async function createLabelTable() {
   });
 }
 
-async function createPostLabelRelationTable() {
+export async function createPostLabelRelationTable() {
   return await db.schema.createTableIfNotExists(`Post_Label_Relation`, table => {
     table.increments('id').primary();
     table.string('post_id');
@@ -64,7 +64,7 @@ async function createPostLabelRelationTable() {
   });
 }
 
-async function createBlogTables() {
+export async function createBlogTables() {
   return await Promise.all([
     createPostTable(),
     createCategoryTable(),
@@ -74,14 +74,5 @@ async function createBlogTables() {
     console.log('全ての tables 準備完了');
   }).catch(err => {
     console.log(err);
-  })
-}
-
-module.exports = {
-  db,
-  createPostTable,
-  createCategoryTable,
-  createLabelTable,
-  createPostLabelRelationTable,
-  createBlogTables
+  });
 }

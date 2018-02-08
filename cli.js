@@ -1,14 +1,14 @@
-const program = require('commander');
-const moment = require('moment');
-const chalk = require('chalk')
-const table = require('text-table');
-const fs = require('fs');
-const os = require('os');
-const { prompt, Questions, Separator, ui } = require('inquirer');
-const child_process = require('child_process');
+import program from 'commander';
+import moment from 'moment';
+import chalk from 'chalk'
+import table from 'text-table';
+import fs from 'fs';
+import os from 'os';
+import { prompt, Questions, Separator, ui } from 'inquirer';
+import child_process from 'child_process';
 
-const Util = require('./util');
-const FileService = require('./service/fileService');
+import * as Util from './util';
+import * as FileService from './service/fileService';
 
 let filePath = '';
 let title = '';
