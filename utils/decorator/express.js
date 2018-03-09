@@ -4,15 +4,23 @@ import { Router } from 'express';
  * 抓取异步异常的装饰器
  */
 export function catchError () {
-  const decorator = (t, n, descriptor) => {
-    console.log(t);
+  const decorator = (descriptor) => {
+    console.log(descriptor.value);
     let origin = descriptor.value;
-    return (req, res, next) => {
+    descriptor.value = (req, res, next) => {
       origin(req, res).catch(next);
     }
+    return descriptor;
   }
-  return decorator;
 }
+
+// export function Catch (instance) {
+//   const origin = instance.value;
+//   console.log('decorator');
+//   return (req, res, next) {
+    
+//   }
+// }
 
 // /**
 //  * 

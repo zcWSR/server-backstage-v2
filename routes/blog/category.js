@@ -8,7 +8,6 @@ import { catchError } from '../../utils/decorator/express'
  */
 export default function (router) {
   
-  @catchError
   function a (req, res) {
     PostService.queryAllCates()
       .then(data => res.jsonp({ result: data }));
