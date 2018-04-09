@@ -42,13 +42,14 @@ export default function (router) {
         res.status(500).jsonp({ error });
       else {
         const fileName = files[Math.floor((Math.random() * files.length))];
-        fs.readFile(path.resolve(__dirname, `../../src/imgs/${fileName}`), (error, data) => {
-          if (error) res.status(500).jsonp({ error });
-          else {
-            res.writeHead(200, { 'Content-Type': 'image/jpeg' });
-            res.end(data, 'binay');
-          }
-        });
+        res.redirect(`${fileName}`);
+        // fs.readFile(path.resolve(__dirname, `../../src/imgs/${fileName}`), (error, data) => {
+        //   if (error) res.status(500).jsonp({ error });
+        //   else {
+        //     res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+        //     res.end(data, 'binay');
+        //   }
+        // });
       }
     });
   });
