@@ -36,7 +36,7 @@ export default function (router) {
     });
   });
 
-  route.get('/imgs/random', (req, res) => {
+  router.get('/imgs/random', (req, res) => {
     fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
       if (error) res.status(500).jsonp({ error });
       else {
