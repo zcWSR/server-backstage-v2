@@ -33,7 +33,6 @@ export default function (router) {
     return new Promise((resolve, reject) => {
       const filePath = path.resolve(__dirname, `../../src/imgs/${name}`);
       const imgbuffer = img(filePath).size(200).encode('jpg', {operation:50});
-      console.log('start get main color');
       thmclrx.octree(imgbuffer, 256, (error, colors) => {
         resolve({ name, color: colors[0].color });
       });
