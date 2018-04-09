@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
+import ps from 'process';
 
 import * as PostService from '../../service/postService';
 
@@ -10,7 +11,7 @@ import * as PostService from '../../service/postService';
  */
 export default function (router) {
   router.get('/about', (req, res) => {
-    fs.readFile(path.resolve(__dirname, '../src/about.md'), (err, data) => {
+    fs.readFile(path.resolve(ps.cwd(), 'src/about.md'), (error, data) => {
       if (error)
         res.status(500).jsonp({ error });
       else
@@ -19,7 +20,7 @@ export default function (router) {
   });
   
   router.get('/resume', (req, res) => {
-    fs.readFile(path.resolve(__dirname, '../src/resume.md'), (err, data) => {
+    fs.readFile(path.resolve(ps.cwd(), 'src/resume.md'), (error, data) => {
       if (error)
         res.status(500).jsonp({ error });
       else
@@ -28,7 +29,7 @@ export default function (router) {
   });
   
   router.get('/imgs', (req, res) => {
-    fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
+    fs.readdir(path.resolve(ps.cwd(), 'src/imgs'), (error, files) => {
       if (error)
         res.status(500).jsonp({ error });
       else
@@ -37,12 +38,13 @@ export default function (router) {
   });
 
   router.get('/imgs/random', (req, res) => {
-    fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
-      if (error) res.status(500).jsonp({ error });
+    fs.readdir(path.resolve(ps.cwd(), 'src/imgs'), (error, files) => {
+      if (error)
+        res.status(500).jsonp({ error });
       else {
-        const filePath = files[Math.floor((Math.random() * files.length))];
-        fs.readFile(filePath, (err, data) => {
-          if (err) res.status(500).jsonp({ error });
+        const fileName = files[Math.floor((Math.random() * files.length))];
+        fs.readFile(path.resolve(ps.cwd(), `src/imgs/${fileName}`), (error, data) => {
+          if (error) res.status(500).jsonp({ error });
           else {
             res.writeHead(200, { 'Content-Type': 'image/jpeg' });
             res.end(data, 'binay');
@@ -53,7 +55,7 @@ export default function (router) {
   });
   
   router.get('/imgs/:name', (req, res) => {
-    fs.readFile(path.resolve(__dirname, `../src/img/${req.params.name}`), (err, data) => {
+    fs.readFile(path.resolve(ps.cwd(), `src/imgs/${req.params.name}`), (error, data) => {
       if (error)
         res.status(500).jsonp({ error });
       else {

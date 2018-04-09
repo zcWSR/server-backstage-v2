@@ -19,8 +19,10 @@ export function setRoutes(app) {
         });
     for (let routerName of routerNames) {
         const router = Router();
-        const dirPath = path.resolve(__dirname, '../', 'routes', routerName);
+        const dirPath = path.resolve(__dirname, '../routes/', routerName || 'main');
+        console.log(dirPath);
         execRequires(requireAll(dirPath), router);
+        console.log(`/${routerName}`);
         app.use(`/${routerName}`, router);
     }
 }
@@ -31,6 +33,7 @@ export function setRoutes(app) {
  * @param {*} params 待传入的参数
  */
 export function execRequires(requireMap, params) {
+    console.log(requireMap);
     for (let key of Object.keys(requireMap)) {
       const func = requireMap[key];
       switch (typeof func) {
