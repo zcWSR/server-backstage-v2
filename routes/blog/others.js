@@ -29,10 +29,26 @@ export default function (router) {
   
   router.get('/imgs', (req, res) => {
     fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
-      if (err)
+      if (error)
         res.status(500).jsonp({ error });
       else
         res.jsonp({ result: files.filter(file => file !== '.DS_Store') });
+    });
+  });
+
+  route.get('/imgs/random', (req, res) => {
+    fs.readdir(path.resolve(__dirname, '../src/img'), (err, files) => {
+      if (error) res.status(500).jsonp({ error });
+      else {
+        const filePath = files[Math.floor((Math.random() * files.length))];
+        fs.readFile(filePath, (err, data) => {
+          if (err) res.status(500).jsonp({ error });
+          else {
+            res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+            res.end(data, 'binay');
+          }
+        });
+      }
     });
   });
   
