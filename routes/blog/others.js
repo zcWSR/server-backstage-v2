@@ -84,10 +84,8 @@ export default function (router) {
       if (error)
         res.status(500).jsonp({ error });
       else {
-        setTimeout(() => {
-          res.writeHead(200, { 'Content-Type': 'image/jpeg' });
-          res.end(data, 'binary');
-        }, 1000);
+        res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+        res.end(data, 'binary');
       }
     });
   });
