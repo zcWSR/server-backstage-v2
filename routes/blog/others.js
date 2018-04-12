@@ -5,6 +5,7 @@ import img from 'images';
 import thmclrx from 'thmclrx';
 
 import * as PostService from '../../service/postService';
+import ReturnJson from '../../utils/return-json';
 
 /**
  * 
@@ -14,18 +15,18 @@ export default function (router) {
   router.get('/about', (req, res) => {
     fs.readFile(path.resolve(__dirname, '../../src/about.md'), (error, data) => {
       if (error)
-        res.status(500).jsonp({ error });
+        ReturnJson.error(res, error);
       else
-        res.jsonp({ result: data.toString() });
+        ReturnJson.ok(res, data.toString());
     });
   });
   
   router.get('/resume', (req, res) => {
     fs.readFile(path.resolve(__dirname, '../../src/resume.md'), (error, data) => {
       if (error)
-        res.status(500).jsonp({ error });
+      ReturnJson.error(res, error);
       else
-        res.jsonp({ result: data.toString() });
+      ReturnJson.ok(res, data.toString());
     });
   });
 
@@ -51,11 +52,11 @@ export default function (router) {
   router.get('/imgs', (req, res) => {
     fs.readdir(path.resolve(__dirname, '../../src/imgs'), (error, files) => {
       if (error)
-        res.status(500).jsonp({ error });
+        ReturnJson.error(res, error);
       else {
         const filenames = files.filter(file => file !== '.DS_Store');
         getFiles(filenames).then(result => {
-          res.jsonp({ result });
+          ReturnJson.ok(res, result);
         });
       }
     });
@@ -64,7 +65,7 @@ export default function (router) {
   router.get('/imgs/random', (req, res) => {
     fs.readdir(path.resolve(__dirname, '../../src/imgs'), (error, files) => {
       if (error)
-        res.status(500).jsonp({ error });
+        ReturnJson.error(res, error);
       else {
         const fileName = files[Math.floor((Math.random() * files.length))];
         res.redirect(`${fileName}`);
@@ -82,7 +83,7 @@ export default function (router) {
   router.get('/imgs/:name', (req, res) => {
     fs.readFile(path.resolve(__dirname, `../../src/imgs/${req.params.name}`), (error, data) => {
       if (error)
-        res.status(500).jsonp({ error });
+        ReturnJson.error(res, error);
       else {
         res.writeHead(200, { 'Content-Type': 'image/jpeg' });
         res.end(data, 'binary');

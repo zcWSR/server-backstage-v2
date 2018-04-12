@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as PostService from '../../service/postService';
+import ReturnJson from '../../utils/return-json';
 
 /**
  * 
@@ -7,40 +8,43 @@ import * as PostService from '../../service/postService';
  */
 export default function (router) {
   router.get('/posts', (req, res) => {
-    let page = req.query.page || 1;
-    getPosts(page).then((data) => res.jsonp(data));
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 5;
+    getPosts(page, pageSize).then(data => ReturnJson.ok(res, data));
   });
   
   router.post('/posts/upload', (req, res) => {
     const post = req.body;
     PostService.insertOne(post)
-      .then(() => res.jsonp({ result: 'ok' }))
-      .catch(error => res.status(500).jsonp({ error }));
+      .then(() => ReturnJson.ok(res, null))
+      .catch(error => ReturnJson.error(res, error));
   });
   
   router.get('/posts/by-title/:title', (req, res) => {
     console.log(req.params.title);
     PostService.queryByTitle(req.params.title)
-      .then(data => res.jsonp({ result: data }))
-      .catch(error => res.status(500).jsonp({ error }));
+      .then(data => ReturnJson.ok(res, data))
+      .catch(error => ReturnJson.error(res, error));
   })
   
   router.get('/posts/:id', (req, res) => {
     let id = req.params.id;
     if (!id)
-      res.status(404).jsonp({ error: `not found post with _id: ${id}` });
+      ReturnJson.error(res, `not found post with _id: ${id}`);
     else
       PostService.queryOneById(id)
-        .then(post => res.jsonp({ result: post }))
-        .catch(error => res.status(500).jsonp({ error }));
+        .then(data => ReturnJson.ok(res, data))
+        .catch(error => ReturnJson.error(res, error));
   })
   
-  async function getPosts(page) {
-    let posts = await PostService.querySome(page);
-    let count = await PostService.countAllPost();
+  async function getPosts(page, pageSize) {
+    let posts = await PostService.querySome(page, pageSize);
+    let totalCount = await PostService.countAllPost();
     return {
-      count: count,
-      result: posts
-    }
+      totalCount,
+      list: posts,
+      curPage: +page,
+      pageSize
+    };
   }
 }

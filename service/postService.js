@@ -2,7 +2,6 @@ import uuid from 'uuid/v1';
 
 import { db } from '../db';
 
-const pageSize = 5;
 /**
  * 插入一条
  * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string }} post 文章对象
@@ -125,7 +124,7 @@ export async function queryOneById (id) {
  * 查找一部分博文，页大小 = 5
  * @param {number} page 页
  */
-export async function querySome (page) {
+export async function querySome (page, pageSize) {
   let rows = await db.raw(
     `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
       inner join Post_Label_Relation, Label, Category 
