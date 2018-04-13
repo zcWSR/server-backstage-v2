@@ -17,6 +17,7 @@ export default class RetrunJson {
 
   static error(res, error, errcode = -1, jsonp = true) {
     const result = {
+      data: null,
       errmsg: error,
       errcode,
       ret: false,

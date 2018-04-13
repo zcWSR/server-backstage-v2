@@ -104,12 +104,12 @@ export async function queryOneById (id) {
   return rows.reduce((prev, cur) => {
     if (!prev) {
       prev = {
-        _id: cur.id,
+        id: cur.id,
         title: cur.title,
         date: cur.date,
         section: cur.section,
         rest: cur.rest,
-        categories: [cur.category],
+        category: cur.category,
         labels: cur.label === ' ' ? [] : [cur.label]
       };
     } else {
@@ -145,7 +145,7 @@ export async function querySome (page, pageSize) {
         date: cur.date,
         section: cur.section,
         rest: cur.rest,
-        categories: cur.category,
+        category: cur.category,
         labels: cur.label === ' ' ? [] : [cur.label]
       });
     } else {
