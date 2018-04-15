@@ -8,10 +8,12 @@ export default class RetrunJson {
       ret: true,
       ver: RetrunJson.VERSION
     };
-    if (jsonp) {
-      res.jsonp(result);
+    if (process.env.ENV === 'dev') {
+      setTimeout(() => {
+        RetrunJson.returnResult(res, result, jsonp);
+      }, 500);
     } else {
-      res.json(result);
+      RetrunJson.returnResult(res, result, jsonp);
     }
   }
 
@@ -23,7 +25,17 @@ export default class RetrunJson {
       ret: false,
       ver: RetrunJson.VERSION
     };
-    if (jsonp) {
+    if (process.env.ENV === 'dev') {
+      setTimeout(() => {
+        RetrunJson.returnResult(res, result, jsonp);
+      }, 500);
+    } else {
+      RetrunJson.returnResult(res, result, jsonp);
+    }
+  }
+
+  static returnResult(res, result, isJonsp) {
+    if (isJonsp) {
       res.jsonp(result);
     } else {
       res.json(result);

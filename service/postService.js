@@ -1,19 +1,19 @@
 import uuid from 'uuid/v1';
+const Log = require('log');
 
 import { db } from '../db';
+import { queryOne } from './imageService';
+
+const logger = new Log('postService');
 
 /**
  * 插入一条
- * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string }} post 文章对象
+ * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
  */
 export async function insertOne (post) {
   let postId = uuid();
   let cateId = await queryOrInsertOneCate(post.category);
 
-  if (!post.labels.length) {
-    post.labels = [' '];
-  }
-  
   for(let label of post.labels) {
     await insertOneLabel(label, postId);
   }
@@ -24,9 +24,10 @@ export async function insertOne (post) {
     date: post.date,
     section: post.section,
     rest: post.rest,
-    cate_id: cateId
+    cate_id: cateId,
+    image_id: post.imageId
   });
-  console.log(`新建文章完成, id: ${postId}`)
+  logger.info(`新建文章完成, id: ${postId}`);
   // sql并行会数据不同步
   // let labelPromises = post.labels.map(label => insertOneLabel(label, postId));
   // return await Promise.all(labelPromises);
@@ -55,14 +56,14 @@ export async function insertOneLabel (labelName, postId) {
   let labelFromDB = await db('Label').first('id').where('name', labelName);
   let labelId;
   if (labelFromDB) {
-    console.log(`label: ${labelName} 存在, id: ${labelFromDB.id}`)
+    logger.info(`label: ${labelName} 存在, id: ${labelFromDB.id}`);
     labelId = labelFromDB.id;
   } else {
     labelId = await db('Label').insert({ name: labelName });
     labelId = parseInt(labelId);
-    console.log(`label: ${labelName} 不存在, 新 id: ${labelId}`)
+    logger.info(`label: ${labelName} 不存在, 新 id: ${labelId}`);
   }
-  console.log(`写入 label 关系表: ${JSON.stringify({
+  logger.info(`写入 label 关系表: ${JSON.stringify({
     post_id: postId,
     label_id: labelId
   })}`);
@@ -79,45 +80,34 @@ export async function insertOneLabel (labelName, postId) {
 export async function queryOrInsertOneCate (cateName) {
   let categoryFromDB = await db('Category').first('id').where('name', cateName);
   if (categoryFromDB) {
-    console.log(`cate: ${cateName} 存在, id: ${categoryFromDB.id}`)
+    logger.info(`cate: ${cateName} 存在, id: ${categoryFromDB.id}`);
     return categoryFromDB.id;
   } else {
     let cateId = await db('Category').insert({ name: cateName });
-    console.log(`cate: ${cateName} 不存在, 新 id: ${cateId}`)
+    logger.info(`cate: ${cateName} 不存在, 新 id: ${cateId}`)
     return parseInt(cateId);
   }
 }
 
+/**
+ *  通过id查找文章全信息
+ * @param {string} id 文章id
+ */
 export async function queryOneById (id) {
   let rows = await db.raw(
-    `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
-      inner join Post_Label_Relation, Label, Category 
-          on
-              Post.id = "${id}" AND
-              Post_Label_Relation.post_id = "${id}" AND
-              Post_Label_Relation.label_id = Label.id AND
-              Category.id = Post.cate_id`
+    `select p.id as id, p.title as title, p.date as date, p.section as section, p.rest as rest, c.name as category, group_concat(l.name, ',') as labels, i.url as background_url, i.main_color as main_color
+      from (select * from Post where Post.id = '${id}') as p
+      left join Post_Label_Relation pl on p.id = pl.post_id
+      left join Label l on l.id = pl.label_id
+      left join Category c on c.id = p.cate_id
+      left join Image i on i.id = p.image_id`
   );
 
   if (!rows.length) return null;
 
-  return rows.reduce((prev, cur) => {
-    if (!prev) {
-      prev = {
-        id: cur.id,
-        title: cur.title,
-        date: cur.date,
-        section: cur.section,
-        rest: cur.rest,
-        category: cur.category,
-        labels: cur.label === ' ' ? [] : [cur.label]
-      };
-    } else {
-      prev.labels.push(cur.label);
-    }
-
-    return prev;
-  }, null);
+  const post = rows[0];
+  post.labels = post.labels ? post.labels.split(',') : []
+  return post;
 }
 
 /**
@@ -126,49 +116,105 @@ export async function queryOneById (id) {
  */
 export async function querySome (page, pageSize) {
   let rows = await db.raw(
-    `select Post.id, Post.title, Post.date, Post.section, Post.rest, Label.name as label, Category.name as category from Post 
-      inner join Post_Label_Relation, Label, Category 
-          on
-              Post_Label_Relation.post_id = Post.id 
-              where Post.id 
-                  in (select id from Post order by Post.date desc limit ${pageSize} offset ${(page - 1) * pageSize}) AND
-              Post_Label_Relation.label_id = Label.id AND
-              Category.id = Post.cate_id
-    order by Post.date desc`
+    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
+      from (select * from Post order by Post.date desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p
+      left join Post_Label_Relation pl on p.id = pl.post_id
+      left join Label l on l.id = pl.label_id
+      left join Category c on c.id = p.cate_id
+      group by p.id
+      order by p.date desc`
   );
 
-  return rows.reduce((prev, cur) => {
-    if (!prev.length || prev[prev.length - 1].id !== cur.id) {
-      prev.push({
-        id: cur.id,
-        title: cur.title,
-        date: cur.date,
-        section: cur.section,
-        rest: cur.rest,
-        category: cur.category,
-        labels: cur.label === ' ' ? [] : [cur.label]
-      });
-    } else {
-      prev[prev.length - 1].labels.push(cur.label);
-    }
-    return prev;
-  }, []);
+  return rows.map(item => {
+    item.labels = item.labels ? item.labels.split(',') : []
+    return item;
+  });
 } 
 
 /**
- * 仅查找id和title (不分页)
+ * 
+ * @param {string} title 文章title关键词
+ * @param {number} page 页
+ * @param {number} pageSize 每页大小
  */
-export async function queryByTitle (title) {
-  return await db('post')
-                .select(['id', 'title'])
-                .where('title', 'like', `%${title}%`)
-              .orderBy('date', 'desc');
+export async function queryByTitle (title, page, pageSize) {
+  let rows = await db.raw(
+    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
+      from (select * from Post where Post.title like '%${title}%' order by Post.date desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p
+      left join Post_Label_Relation pl on p.id = pl.post_id
+      left join Label l on l.id = pl.label_id
+      left join Category c on c.id = p.cate_id
+      group by p.id
+      order by p.date desc`
+  );
+
+  return rows.map(item => {
+    item.labels = item.labels ? item.labels.split(',') : []
+    return item;
+  });
+}
+
+/**
+ * 
+ * @param {string} cate 文章cate关键词
+ * @param {number} page 页
+ * @param {number} pageSize 每页大小
+ */
+export async function queryByCate (cate, page, pageSize) {
+  let rows = await db.raw(
+    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
+      from Post p
+      left join Post_Label_Relation pl on p.id = pl.post_id
+      left join Label l on l.id = pl.label_id
+      inner join (select * from Category where Category.name like '%${cate}%') as c on c.id = p.cate_id
+      group by p.id
+      order by p.date desc
+      limit ${pageSize} offset ${(page - 1) * pageSize}`
+  );
+
+  return rows.map(item => {
+    item.labels = item.labels ? item.labels.split(',') : []
+    return item;
+  });
+}
+
+/**
+ * 
+ * @param {string} label 文章label关键词
+ * @param {number} page 页
+ * @param {number} pageSize 每页大小
+ */
+export async function queryByLabel (label, page, pageSize) {
+  let rows = await db.raw(
+    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name , ',') as labels
+      from (
+        select p.*
+        from Post p
+          left join Post_Label_Relation pl on pl.post_id = p.id
+          inner join Label l on l.id = pl.label_id and l.name like '%${label}%' group by p.id
+      ) as p
+      left join Post_Label_Relation pl on p.id = pl.post_id
+      left join Label l on l.id = pl.label_id 
+      left join Category c on c.id = p.cate_id
+      group by p.id
+      order by p.date desc
+      limit ${pageSize} offset ${(page - 1) * pageSize}`
+  );
+
+
 }
 
 export async function countAllPost () {
   let data = await db('Post').count('id as count').first();
   return data.count;
 }
+
+export async function deletePostById(id) {
+  return await db('Post').where('id', id).del();
+}
+
+
+// ===================Label Category 相关 ===================
 
 export async function queryAllCates () {
   let rows = await db('Category').select('name');
@@ -208,3 +254,4 @@ export async function queryAllLabelsWithCount () {
               .groupBy('Label.id');
   return rows.filter(item => item.name !== ' ');
 }
+

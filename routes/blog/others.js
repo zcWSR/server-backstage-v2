@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
-import img from 'images';
-import thmclrx from 'thmclrx';
+import Images from 'images';
 
 import * as PostService from '../../service/postService';
 import ReturnJson from '../../utils/return-json';
+import ImageUtil from '../../utils/img';
 
 /**
  * 
@@ -30,14 +30,13 @@ export default function (router) {
     });
   });
 
-  function getMainColor(name) {
-    return new Promise((resolve, reject) => {
-      const filePath = path.resolve(__dirname, `../../src/imgs/${name}`);
-      const imgbuffer = img(filePath).size(200).encode('jpg', {operation:50});
-      thmclrx.octree(imgbuffer, 256, (error, colors) => {
-        resolve({ name, color: colors[0].color });
-      });
-    });
+  async function getMainColor(name) {
+    const filePath = path.resolve(__dirname, `../../src/imgs/${name}`);
+    const imgbuffer = Images(filePath).size(200).encode('jpg');
+    // const imgbuffer = fs.readFileSync(filePath);
+    const color = await ImageUtil.getDomainColor(imgbuffer);
+    return { name, color }; 
+
   }
 
   async function getFiles(filenames) {

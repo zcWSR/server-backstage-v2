@@ -2,7 +2,7 @@ import * as request from 'request-promise-native';
 
 let blogHost;
 
-if (process.env.ENV !== 'production') {
+if (process.env.ENV !== 'prod') {
     blogHost = 'http://127.0.0.1:2333/blog'
 } else {
     blogHost = 'http://blog-api.zcwsr.com';

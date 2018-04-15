@@ -5,6 +5,7 @@
   "main": "www.js",
   "scripts": {
     "start": "node www.js",
+    "start:dev": "ENV=dev node www.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -29,13 +30,14 @@
     "images": "^3.0.1",
     "inquirer": "^5.0.1",
     "knex": "^0.14.2",
+    "log": "^1.4.0",
     "moment": "^2.20.1",
+    "node-vibrant": "^3.0.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "require-all": "^2.2.0",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^3.1.4",
     "text-table": "^0.2.0",
-    "thmclrx": "^1.0.0",
     "uuid": "^3.1.0"
   }
 }

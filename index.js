@@ -1,9 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser'
+const Log = require('log');
 
 import { setRoutes } from './utils/route';
-import { createBlogTables } from './db';
+import { createAllTables } from './db';
 
+const logger = new Log('app');
 const app = express();
 
 app.use(bodyParser.json());
@@ -15,38 +17,38 @@ let port = 2333;
 if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
     port = args[3];
 } else {
-  console.warn(`did not find port settings, use default port ${port}`);
+  logger.alert(`did not find port settings, use default port ${port}`);
 }
 let server = app.listen(port);
-console.warn(`server in ${process.env.ENV || 'production'} mode`);
-console.warn(`ご注意ください`);
+logger.info(`server in ${process.env.ENV || 'prod'} mode`);
+logger.alert(`ご注意ください`);
 
 server.on('error', (err) => {
-  console.log('error 了')
-  if (err.syscall !== 'listen') {
-    if (err.syscall === 'read') {
-      console.error(error.message);
-    }
-    throw error;
-  }
+  logger.error(err.message);
+  // if (err.syscall !== 'listen') {
+  //   if (err.syscall === 'read') {
+  //     console.error(error.message);
+  //   }
+  //   throw error;
+  // }
 
-  switch (error.code) {
-    case 'EACCES': 
-      console.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case 'EADDRINUSE': 
-      console.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default: 
-      throw error;
-  }
+  // switch (error.code) {
+  //   case 'EACCES': 
+  //     console.error(`${bind} requires elevated privileges`);
+  //     process.exit(1);
+  //     break;
+  //   case 'EADDRINUSE': 
+  //     console.error(`${bind} is already in use`);
+  //     process.exit(1);
+  //     break;
+  //   default: 
+  //     throw error;
+  // }
 });
 
 process.on('uncaughtException', (err) => {
-  console.error(`Uncaugh Exception: \n${err.message}`);
+  logger.error(`Uncaugh Exception: \n${err.message}`);
 });
 
 
-createBlogTables();
+createAllTables();
