@@ -10,5 +10,6 @@ const json = require('./posts.json');
     item.updateAt = item.date;
     return item;
   });
-  insertSome(posts.reverse());
+  await insertSome(posts.reverse());
+  process.exit();
 })();
