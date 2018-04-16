@@ -131,7 +131,7 @@ export async function querySome (page, pageSize, withLock = false) {
   if (withLock) {
     section = `from (select * from Post order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   } else {
-    section = `from (select * from Post where Post.lock = false order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   }
   let rows = await db.raw(
     `select
@@ -163,12 +163,12 @@ export async function querySome (page, pageSize, withLock = false) {
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByTitle (title, page, pageSize, withLock) {
+export async function queryByTitle (title, page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
     section = `from (select * from Post where Post.title like '%${title}%' order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   } else {
-    section = `from (select * from Post where Post.title like '%${title}%' and lock = false order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where Post.title like '%${title}%' and lock = 0 order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   }
   
 
@@ -201,7 +201,13 @@ export async function queryByTitle (title, page, pageSize, withLock) {
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByCate (cate, page, pageSize) {
+export async function queryByCate (cate, page, pageSize, withLock = false) {
+  let section = '';
+  if (withLock) {
+    section = 'left join Post_Label_Relation pl on p.id = pl.post_id';
+  } else {
+    section = `left join Post_Label_Relation pl on p.id = pl.post_id and p.lock = 0`;
+  }
   let rows = await db.raw(
     `select
       p.id as id,
@@ -211,8 +217,8 @@ export async function queryByCate (cate, page, pageSize) {
       p.section as section,
       c.name as category,
       group_concat(l.name, ',') as labels
-        from Post p
-        left join Post_Label_Relation pl on p.id = pl.post_id
+        from Post as p
+        ${section}
         left join Label l on l.id = pl.label_id
         inner join (select * from Category where Category.name like '%${cate}%') as c on c.id = p.cate_id
         group by p.id
@@ -232,7 +238,13 @@ export async function queryByCate (cate, page, pageSize) {
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByLabel (label, page, pageSize) {
+export async function queryByLabel (label, page, pageSize, withLock = false) {
+  let section = '';
+  if (withLock) {
+    section = `left join Post_Label_Relation pl on pl.post_id = p.id`;
+  } else {
+    section = `left join Post_Label_Relation pl on pl.post_id = p.id and p.lock = 0`;
+  }
   let rows = await db.raw(
     `select
       p.id as id,
@@ -245,7 +257,7 @@ export async function queryByLabel (label, page, pageSize) {
         from (
           select p.*
           from Post p
-            left join Post_Label_Relation pl on pl.post_id = p.id
+            ${section}
             inner join Label l on l.id = pl.label_id and l.name like '%${label}%' group by p.id
         ) as p
         left join Post_Label_Relation pl on p.id = pl.post_id
