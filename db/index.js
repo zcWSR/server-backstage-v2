@@ -15,57 +15,18 @@ export const db = knex({
   useNullAsDefault: true
 });
 
-// export const bs = bookshelf(db);
-
-// export const Post = bs.Model.extend({
-//   tableName: 'Post',
-//   category: function () { return this.belongsTo(Category); },
-//   labels: function () { return this.belongsToMany(Label); },
-//   background: function () { return this.belongsTo(Image); }
-// });
-
-// export const Category = bs.Model.extend({
-//   tableName: 'Category',
-//   posts: function () { this.hasMany(Post); }
-// });
-
-// export const Label = bs.Model.extend({
-//   tableName: 'Label',
-//   posts: function () { return this.belongsToMany(Post); }
-// });
-
-// export const Image = bs.Model.extend({
-//   tableName: 'Image'
-// });
-
-// export const User = bs.Model.extend({
-//   tableName: 'User',
-//   roles: function () { return this.belongsToMany(Role); }
-// });
-
-// // 角色
-// export const Role = bs.Model.extend({
-//   tableName: 'Role',
-//   users: function () { return this.belongsToMany(User); },
-//   rights: function () { return this.belongsToMany(Right); }
-// });
-
-// // 权限
-// export const Right = bs.Model.extend({
-//   tableName: 'Right',
-//   roles: function () { return this.belongsToMany(Role) }
-// });
-
 export async function createPostTable() {
   if (await db.schema.hasTable('Post')) return;
   return await db.schema.createTable(`Post`, table => {
     table.uuid('id').primary();
     table.string('title');
-    table.dateTime('date');
+    table.dateTime('create_at');
+    table.dateTime('update_at');
     table.text('section');
-    table.text('rest');
+    table.text('rest').nullable();
     table.integer('cate_id').references('Category.id');
     table.integer('image_id').nullable().references('Image.id');
+    table.boolean('lock').defaultTo(false);
   }).then(() => {
     logger.info(`table 'Post' 準備完了`);
   }).catch(err => {
@@ -80,7 +41,7 @@ export async function createCategoryTable() {
     table.string('name');
   }).then(() => {
     logger.info(`table 'Category' 準備完了`);
-  }).catch(err => {``
+  }).catch(err => {
     logger.error(err);
   });
 }
@@ -124,12 +85,26 @@ export async function createImageTable() {
   });
 }
 
+export async function createArticalTable() {
+  if (await db.schema.hasTable('Artical')) return;
+  return await db.schema.createTable('Artical', table => {
+    table.increments('id').primary();
+    table.string('route');
+    table.string('title');
+    table.text('content').nullable();
+    table.text('url').nullable();
+    table.dateTime('create_at');
+    table.dateTime('update_at');
+    table.integer('image_id').nullable();
+  });
+}
+
 export async function createUserTable() {
   if (await db.schema.hasTable('User')) return;
   return await db.schema.createTable('User', table => {
     table.increments('id').primary();
-    table.string('user_name').nullable();
-    table.string('email');
+    table.string('user_name');
+    // table.string('email');
     table.string('password');
   }).then(() => {
     logger.info(`table 'User' 準備完了`);
@@ -138,55 +113,65 @@ export async function createUserTable() {
   });
 }
 
-export async function createRoleTable() {
-  if (await db.schema.hasTable('Role')) return;
-  return await db.schema.createTable('Role', table => {
+export async function createViewHistory() {
+  if (await db.schema.hasTable('View_History')) return;
+  return await db.schema.createTable('View_History', table => {
     table.increments('id').primary();
-    table.string('name');
-  }).then(() => {
-    logger.info(`table 'Role' 準備完了`);
-  }).catch(err => {
-    logger.error(err);
+    table.uuid('post_id').nullable();
+    table.integer('artical_id').nullable();
+    table.dateTime('create_at');
   });
 }
 
-export async function createRightTable() {
-  if (await db.schema.hasTable('Right')) return;
-  return await db.schema.createTable('Right', table => {
-    table.increments('id').primary();
-    table.string('name');
-  }).then(() => {
-    logger.info(`table 'Right' 準備完了`);
-  }).catch(err => {
-    logger.error(err);
-  });
-}
+// export async function createRoleTable() {
+//   if (await db.schema.hasTable('Role')) return;
+//   return await db.schema.createTable('Role', table => {
+//     table.increments('id').primary();
+//     table.string('name');
+//   }).then(() => {
+//     logger.info(`table 'Role' 準備完了`);
+//   }).catch(err => {
+//     logger.error(err);
+//   });
+// }
 
-export async function createUserRoleRelationTable() {
-  if (await db.schema.hasTable('User_Role_Relation')) return;
-  return db.schema.createTable('User_Role_Relation', table => {
-    table.increments('id').primary();
-    table.integer('user_id').references('User.id').onDelete('CASCADE');
-    table.integer('role_id').references('Role.id').onDelete('CASCADE')
-  }).then(() => {
-    logger.info(`table 'User_Role_Relation' 準備完了`);
-  }).catch(err => {
-    logger.error(err);
-  });
-}
+// export async function createRightTable() {
+//   if (await db.schema.hasTable('Right')) return;
+//   return await db.schema.createTable('Right', table => {
+//     table.increments('id').primary();
+//     table.string('name');
+//   }).then(() => {
+//     logger.info(`table 'Right' 準備完了`);
+//   }).catch(err => {
+//     logger.error(err);
+  // });
+// }
 
-export async function createRoleRightRelationTable() {
-  if (await db.schema.hasTable('Role_Right_Relation')) return;
-  return db.schema.createTable('Role_Right_Relation', table => {
-    table.increments('id').primary();
-    table.integer('role_id').references('Role.id').onDelete('CASCADE');
-    table.integer('right_id').references('Right.id').onDelete('CASCADE');
-  }).then(() => {
-    logger.info(`table 'Role_Right_Relation' 準備完了`);
-  }).catch(err => {
-    logger.error(err);
-  });
-}
+// export async function createUserRoleRelationTable() {
+//   if (await db.schema.hasTable('User_Role_Relation')) return;
+//   return db.schema.createTable('User_Role_Relation', table => {
+//     table.increments('id').primary();
+//     table.integer('user_id').references('User.id').onDelete('CASCADE');
+//     table.integer('role_id').references('Role.id').onDelete('CASCADE')
+//   }).then(() => {
+//     logger.info(`table 'User_Role_Relation' 準備完了`);
+//   }).catch(err => {
+//     logger.error(err);
+//   });
+// }
+
+// export async function createRoleRightRelationTable() {
+//   if (await db.schema.hasTable('Role_Right_Relation')) return;
+//   return db.schema.createTable('Role_Right_Relation', table => {
+//     table.increments('id').primary();
+//     table.integer('role_id').references('Role.id').onDelete('CASCADE');
+//     table.integer('right_id').references('Right.id').onDelete('CASCADE');
+//   }).then(() => {
+//     logger.info(`table 'Role_Right_Relation' 準備完了`);
+//   }).catch(err => {
+//     logger.error(err);
+//   });
+// }
 
 export async function createAllTables() {
   return await Promise.all([
@@ -194,12 +179,10 @@ export async function createAllTables() {
     createCategoryTable(),
     createLabelTable(),
     createPostLabelRelationTable(),
+    createArticalTable(),
     createImageTable(),
     createUserTable(),
-    createRoleTable(),
-    createRightTable(),
-    createUserRoleRelationTable(),
-    createRoleRightRelationTable()
+    createViewHistory()
   ]).then(() => {
     logger.info('全ての tables 準備完了');
   }).catch(err => {

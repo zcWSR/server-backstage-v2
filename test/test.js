@@ -5,5 +5,10 @@ const json = require('./posts.json');
 
 (async () => {
   await createAllTables();
-  insertSome(json.data.list.reverse());
+  const posts = json.data.list.map(item => {
+    item.createAt = item.date;
+    item.updateAt = item.date;
+    return item;
+  });
+  insertSome(posts.reverse());
 })();

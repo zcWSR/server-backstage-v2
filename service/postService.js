@@ -8,7 +8,7 @@ const logger = new Log('postService');
 
 /**
  * 插入一条
- * @param {{ title: string, date: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
+ * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
  */
 export async function insertOne (post) {
   let postId = uuid();
@@ -21,7 +21,8 @@ export async function insertOne (post) {
   await db('Post').insert({
     id: postId,
     title: post.title,
-    date: post.date,
+    create_at: post.createAt,
+    update_at: post.updateAt,
     section: post.section,
     rest: post.rest,
     cate_id: cateId,
@@ -35,7 +36,7 @@ export async function insertOne (post) {
 
 /**
  * 插入多条
- * @param {[{title: string, date: string, category: string, labels: string[], section: string, rest: string}]} posts 
+ * @param {[{title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string}]} posts 
  */
 export async function insertSome (posts) {
   for(let post of posts) {
@@ -95,12 +96,23 @@ export async function queryOrInsertOneCate (cateName) {
  */
 export async function queryOneById (id) {
   let rows = await db.raw(
-    `select p.id as id, p.title as title, p.date as date, p.section as section, p.rest as rest, c.name as category, group_concat(l.name, ',') as labels, i.url as background_url, i.main_color as main_color
-      from (select * from Post where Post.id = '${id}') as p
-      left join Post_Label_Relation pl on p.id = pl.post_id
-      left join Label l on l.id = pl.label_id
-      left join Category c on c.id = p.cate_id
-      left join Image i on i.id = p.image_id`
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      p.rest as rest,
+      p.lock as lock,
+      c.name as category,
+      group_concat(l.name, ',') as labels,
+      i.url as background_url,
+      i.main_color as main_color
+        from (select * from Post where Post.id = '${id}') as p
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id
+        left join Category c on c.id = p.cate_id
+        left join Image i on i.id = p.image_id`
   );
 
   if (!rows.length) return null;
@@ -114,15 +126,29 @@ export async function queryOneById (id) {
  * 查找一部分博文，页大小 = 5
  * @param {number} page 页
  */
-export async function querySome (page, pageSize) {
+export async function querySome (page, pageSize, withLock = false) {
+  let section = '';
+  if (withLock) {
+    section = `from (select * from Post order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+  } else {
+    section = `from (select * from Post where Post.lock = false order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+  }
   let rows = await db.raw(
-    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
-      from (select * from Post order by Post.date desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p
-      left join Post_Label_Relation pl on p.id = pl.post_id
-      left join Label l on l.id = pl.label_id
-      left join Category c on c.id = p.cate_id
-      group by p.id
-      order by p.date desc`
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      p.lock as lock,
+      c.name as category,
+      group_concat(l.name, ',') as labels
+        ${section}
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id
+        left join Category c on c.id = p.cate_id
+        group by p.id
+        order by p.create_at desc`
   );
 
   return rows.map(item => {
@@ -137,15 +163,30 @@ export async function querySome (page, pageSize) {
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByTitle (title, page, pageSize) {
+export async function queryByTitle (title, page, pageSize, withLock) {
+  let section = '';
+  if (withLock) {
+    section = `from (select * from Post where Post.title like '%${title}%' order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+  } else {
+    section = `from (select * from Post where Post.title like '%${title}%' and lock = false order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+  }
+  
+
   let rows = await db.raw(
-    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
-      from (select * from Post where Post.title like '%${title}%' order by Post.date desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p
-      left join Post_Label_Relation pl on p.id = pl.post_id
-      left join Label l on l.id = pl.label_id
-      left join Category c on c.id = p.cate_id
-      group by p.id
-      order by p.date desc`
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      c.name as category,
+      group_concat(l.name, ',') as labels
+        ${section}
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id
+        left join Category c on c.id = p.cate_id
+        group by p.id
+        order by p.createAt desc`
   );
 
   return rows.map(item => {
@@ -162,14 +203,21 @@ export async function queryByTitle (title, page, pageSize) {
  */
 export async function queryByCate (cate, page, pageSize) {
   let rows = await db.raw(
-    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name, ',') as labels
-      from Post p
-      left join Post_Label_Relation pl on p.id = pl.post_id
-      left join Label l on l.id = pl.label_id
-      inner join (select * from Category where Category.name like '%${cate}%') as c on c.id = p.cate_id
-      group by p.id
-      order by p.date desc
-      limit ${pageSize} offset ${(page - 1) * pageSize}`
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      c.name as category,
+      group_concat(l.name, ',') as labels
+        from Post p
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id
+        inner join (select * from Category where Category.name like '%${cate}%') as c on c.id = p.cate_id
+        group by p.id
+        order by p.createAt desc
+        limit ${pageSize} offset ${(page - 1) * pageSize}`
   );
 
   return rows.map(item => {
@@ -186,19 +234,26 @@ export async function queryByCate (cate, page, pageSize) {
  */
 export async function queryByLabel (label, page, pageSize) {
   let rows = await db.raw(
-    `select p.id as id, p.title as title, p.date as date, p.section as section, c.name as category, group_concat(l.name , ',') as labels
-      from (
-        select p.*
-        from Post p
-          left join Post_Label_Relation pl on pl.post_id = p.id
-          inner join Label l on l.id = pl.label_id and l.name like '%${label}%' group by p.id
-      ) as p
-      left join Post_Label_Relation pl on p.id = pl.post_id
-      left join Label l on l.id = pl.label_id 
-      left join Category c on c.id = p.cate_id
-      group by p.id
-      order by p.date desc
-      limit ${pageSize} offset ${(page - 1) * pageSize}`
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      c.name as category,
+      group_concat(l.name , ',') as labels
+        from (
+          select p.*
+          from Post p
+            left join Post_Label_Relation pl on pl.post_id = p.id
+            inner join Label l on l.id = pl.label_id and l.name like '%${label}%' group by p.id
+        ) as p
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id 
+        left join Category c on c.id = p.cate_id
+        group by p.id
+        order by p.createAt desc
+        limit ${pageSize} offset ${(page - 1) * pageSize}`
   );
 
 
