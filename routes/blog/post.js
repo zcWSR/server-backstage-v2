@@ -5,7 +5,7 @@ import * as PostService from '../../service/postService';
 import ReturnJson from '../../utils/return-json';
 
 
-const logger = new Log('route: /blog');
+const logger = new Log('route: /blog/posts');
 /**
  * 
  * @param {Router} router 

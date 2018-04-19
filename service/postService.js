@@ -166,11 +166,10 @@ export async function querySome (page, pageSize, withLock = false) {
 export async function queryByTitle (title, page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
-    section = `from (select * from Post where Post.title like '%${title}%' order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where Post.title like '%${title}%' order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   } else {
-    section = `from (select * from Post where Post.title like '%${title}%' and lock = 0 order by Post.createAt desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where Post.title like '%${title}%' and lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
   }
-  
 
   let rows = await db.raw(
     `select
@@ -178,7 +177,6 @@ export async function queryByTitle (title, page, pageSize, withLock = false) {
       p.title as title,
       p.create_at as createAt,
       p.update_at as updateAt,
-      p.section as section,
       c.name as category,
       group_concat(l.name, ',') as labels
         ${section}
@@ -186,7 +184,7 @@ export async function queryByTitle (title, page, pageSize, withLock = false) {
         left join Label l on l.id = pl.label_id
         left join Category c on c.id = p.cate_id
         group by p.id
-        order by p.createAt desc`
+        order by p.create_at desc`
   );
 
   return rows.map(item => {
@@ -214,15 +212,14 @@ export async function queryByCate (cate, page, pageSize, withLock = false) {
       p.title as title,
       p.create_at as createAt,
       p.update_at as updateAt,
-      p.section as section,
       c.name as category,
       group_concat(l.name, ',') as labels
-        from Post as p
+        from Post p
         ${section}
         left join Label l on l.id = pl.label_id
         inner join (select * from Category where Category.name like '%${cate}%') as c on c.id = p.cate_id
         group by p.id
-        order by p.createAt desc
+        order by p.create_at desc
         limit ${pageSize} offset ${(page - 1) * pageSize}`
   );
 
@@ -251,7 +248,6 @@ export async function queryByLabel (label, page, pageSize, withLock = false) {
       p.title as title,
       p.create_at as createAt,
       p.update_at as updateAt,
-      p.section as section,
       c.name as category,
       group_concat(l.name , ',') as labels
         from (
@@ -264,11 +260,15 @@ export async function queryByLabel (label, page, pageSize, withLock = false) {
         left join Label l on l.id = pl.label_id 
         left join Category c on c.id = p.cate_id
         group by p.id
-        order by p.createAt desc
+        order by p.create_at desc
         limit ${pageSize} offset ${(page - 1) * pageSize}`
   );
 
-
+  return rows.map(item => {
+    item.labels = item.labels ? item.labels.split(',') : []
+    return item;
+  });
+  
 }
 
 export async function countAllPost () {
