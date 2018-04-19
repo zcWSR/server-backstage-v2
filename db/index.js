@@ -86,16 +86,22 @@ export async function createImageTable() {
 }
 
 export async function createArticalTable() {
-  if (await db.schema.hasTable('Artical')) return;
-  return await db.schema.createTable('Artical', table => {
+  if (await db.schema.hasTable('Article')) return;
+  return await db.schema.createTable('Article', table => {
     table.increments('id').primary();
     table.string('route');
+    table.string('short_name');
     table.string('title');
     table.text('content').nullable();
     table.text('url').nullable();
     table.dateTime('create_at');
     table.dateTime('update_at');
     table.integer('image_id').nullable();
+    table.string('bg_main_color').nullable();
+  }).then(() => {
+    logger.info(`table 'Article' 準備完了`);
+  }).catch(err => {
+    logger.error(err);
   });
 }
 
@@ -118,8 +124,12 @@ export async function createViewHistory() {
   return await db.schema.createTable('View_History', table => {
     table.increments('id').primary();
     table.uuid('post_id').nullable();
-    table.integer('artical_id').nullable();
+    table.integer('article_id').nullable();
     table.dateTime('create_at');
+  }).then(() => {
+    logger.info(`table 'View_History' 準備完了`);
+  }).catch(err => {
+    logger.error(err);
   });
 }
 
