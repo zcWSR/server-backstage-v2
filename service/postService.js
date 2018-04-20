@@ -10,14 +10,14 @@ const logger = new Log('postService');
  * 插入一条
  * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
  */
-export async function insertOne (post) {
+export async function insertOne(post) {
   let postId = uuid();
   let cateId = await queryOrInsertOneCate(post.category);
 
-  for(let label of post.labels) {
+  for (let label of post.labels) {
     await insertOneLabel(label, postId);
   }
-  
+
   await db('Post').insert({
     id: postId,
     title: post.title,
@@ -36,10 +36,10 @@ export async function insertOne (post) {
 
 /**
  * 插入多条
- * @param {[{title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string}]} posts 
+ * @param {[{title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string}]} posts
  */
-export async function insertSome (posts) {
-  for(let post of posts) {
+export async function insertSome(posts) {
+  for (let post of posts) {
     await insertOne(post);
   }
   // sql并行会出现数据不同步
@@ -52,9 +52,11 @@ export async function insertSome (posts) {
  * @param {string} labelName 标签名
  * @param {string} postId 文章id
  */
-export async function insertOneLabel (labelName, postId) {
+export async function insertOneLabel(labelName, postId) {
   labelName = labelName.toLocaleLowerCase();
-  let labelFromDB = await db('Label').first('id').where('name', labelName);
+  let labelFromDB = await db('Label')
+    .first('id')
+    .where('name', labelName);
   let labelId;
   if (labelFromDB) {
     logger.info(`label: ${labelName} 存在, id: ${labelFromDB.id}`);
@@ -64,10 +66,12 @@ export async function insertOneLabel (labelName, postId) {
     labelId = parseInt(labelId);
     logger.info(`label: ${labelName} 不存在, 新 id: ${labelId}`);
   }
-  logger.info(`写入 label 关系表: ${JSON.stringify({
-    post_id: postId,
-    label_id: labelId
-  })}`);
+  logger.info(
+    `写入 label 关系表: ${JSON.stringify({
+      post_id: postId,
+      label_id: labelId
+    })}`
+  );
   await db('Post_Label_Relation').insert({
     post_id: postId,
     label_id: labelId
@@ -78,14 +82,16 @@ export async function insertOneLabel (labelName, postId) {
  * 查询或新加一个类别
  * @param {string} cateName 类别名
  */
-export async function queryOrInsertOneCate (cateName) {
-  let categoryFromDB = await db('Category').first('id').where('name', cateName);
+export async function queryOrInsertOneCate(cateName) {
+  let categoryFromDB = await db('Category')
+    .first('id')
+    .where('name', cateName);
   if (categoryFromDB) {
     logger.info(`cate: ${cateName} 存在, id: ${categoryFromDB.id}`);
     return categoryFromDB.id;
   } else {
     let cateId = await db('Category').insert({ name: cateName });
-    logger.info(`cate: ${cateName} 不存在, 新 id: ${cateId}`)
+    logger.info(`cate: ${cateName} 不存在, 新 id: ${cateId}`);
     return parseInt(cateId);
   }
 }
@@ -94,7 +100,7 @@ export async function queryOrInsertOneCate (cateName) {
  *  通过id查找文章全信息
  * @param {string} id 文章id
  */
-export async function queryOneById (id) {
+export async function queryOneById(id) {
   let rows = await db.raw(
     `select
       p.id as id,
@@ -106,8 +112,10 @@ export async function queryOneById (id) {
       p.lock as lock,
       c.name as category,
       group_concat(l.name, ',') as labels,
-      i.url as background_url,
-      i.main_color as main_color
+      i.id as img_id,
+      i.name as img_name,
+      i.url as img_url,
+      i.main_color as img_color
         from (select * from Post where Post.id = '${id}') as p
         left join Post_Label_Relation pl on p.id = pl.post_id
         left join Label l on l.id = pl.label_id
@@ -118,20 +126,40 @@ export async function queryOneById (id) {
   if (!rows.length) return null;
 
   const post = rows[0];
-  post.labels = post.labels ? post.labels.split(',') : []
-  return post;
+  post.labels = post.labels ? post.labels.split(',') : [];
+  return {
+    id: post.id,
+    title: post.title,
+    createAt: post.createAt,
+    updateAt: post.updateAt,
+    section: post.section,
+    rest: post.rest,
+    lock: !!post.lock,
+    category: post.category,
+    labels: post.labels,
+    bg: {
+      id: post.img_id,
+      name: post.img_name,
+      url: post.img_url,
+      mainColor: img_color
+    }
+  };
 }
 
 /**
  * 查找一部分博文，页大小 = 5
  * @param {number} page 页
  */
-export async function querySome (page, pageSize, withLock = false) {
+export async function querySome(page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
-    section = `from (select * from Post order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
   } else {
-    section = `from (select * from Post where lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
   }
   let rows = await db.raw(
     `select
@@ -152,23 +180,27 @@ export async function querySome (page, pageSize, withLock = false) {
   );
 
   return rows.map(item => {
-    item.labels = item.labels ? item.labels.split(',') : []
+    item.labels = item.labels ? item.labels.split(',') : [];
     return item;
   });
-} 
+}
 
 /**
- * 
+ *
  * @param {string} title 文章title关键词
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByTitle (title, page, pageSize, withLock = false) {
+export async function queryByTitle(title, page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
-    section = `from (select * from Post where Post.title like '%${title}%' order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where Post.title like '%${title}%' order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
   } else {
-    section = `from (select * from Post where Post.title like '%${title}%' and lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page - 1) * pageSize}) as p`
+    section = `from (select * from Post where Post.title like '%${title}%' and lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
   }
 
   let rows = await db.raw(
@@ -188,18 +220,18 @@ export async function queryByTitle (title, page, pageSize, withLock = false) {
   );
 
   return rows.map(item => {
-    item.labels = item.labels ? item.labels.split(',') : []
+    item.labels = item.labels ? item.labels.split(',') : [];
     return item;
   });
 }
 
 /**
- * 
+ *
  * @param {string} cate 文章cate关键词
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByCate (cate, page, pageSize, withLock = false) {
+export async function queryByCate(cate, page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
     section = 'left join Post_Label_Relation pl on p.id = pl.post_id';
@@ -224,18 +256,18 @@ export async function queryByCate (cate, page, pageSize, withLock = false) {
   );
 
   return rows.map(item => {
-    item.labels = item.labels ? item.labels.split(',') : []
+    item.labels = item.labels ? item.labels.split(',') : [];
     return item;
   });
 }
 
 /**
- * 
+ *
  * @param {string} label 文章label关键词
  * @param {number} page 页
  * @param {number} pageSize 每页大小
  */
-export async function queryByLabel (label, page, pageSize, withLock = false) {
+export async function queryByLabel(label, page, pageSize, withLock = false) {
   let section = '';
   if (withLock) {
     section = `left join Post_Label_Relation pl on pl.post_id = p.id`;
@@ -265,60 +297,61 @@ export async function queryByLabel (label, page, pageSize, withLock = false) {
   );
 
   return rows.map(item => {
-    item.labels = item.labels ? item.labels.split(',') : []
+    item.labels = item.labels ? item.labels.split(',') : [];
     return item;
   });
-  
 }
 
-export async function countAllPost () {
-  let data = await db('Post').count('id as count').first();
+export async function countAllPost() {
+  let data = await db('Post')
+    .count('id as count')
+    .first();
   return data.count;
 }
 
 export async function deletePostById(id) {
-  return await db('Post').where('id', id).del();
+  return await db('Post')
+    .where('id', id)
+    .del();
 }
-
 
 // ===================Label Category 相关 ===================
 
-export async function queryAllCates () {
+export async function queryAllCates() {
   let rows = await db('Category').select('name');
   return rows.reduce((prev, cur) => {
-    if (cur.name !== ' ')
-      prev.push(cur.name);
+    if (cur.name !== ' ') prev.push(cur.name);
     return prev;
   }, []);
 }
 
-export async function queryAllCatesWithCount () {
+export async function queryAllCatesWithCount() {
   return await db('Category')
-                .select('Category.name').as('category')
-                .count('Post.cate_id as count')
-                .innerJoin('Post', function () {
-                  this.on('Post.cate_id', '=', 'Category.id')
-                })
-              .groupBy('Category.id');
+    .select('Category.name')
+    .as('category')
+    .count('Post.cate_id as count')
+    .innerJoin('Post', function() {
+      this.on('Post.cate_id', '=', 'Category.id');
+    })
+    .groupBy('Category.id');
 }
 
-export async function queryAllLabels () {
+export async function queryAllLabels() {
   let rows = await db('Label').select('name');
   return rows.reduce((prev, cur) => {
-    if (cur.name !== ' ')
-      prev.push(cur.name);
+    if (cur.name !== ' ') prev.push(cur.name);
     return prev;
   }, []);
 }
 
-export async function queryAllLabelsWithCount () {
+export async function queryAllLabelsWithCount() {
   let rows = await db('Label')
-                .select('Label.name').as('label')
-                .count('Post_Label_Relation.post_id as count')
-                .innerJoin('Post_Label_Relation', function () {
-                  this.on('Post_Label_Relation.label_id', '=', 'Label.id')
-                })
-              .groupBy('Label.id');
+    .select('Label.name')
+    .as('label')
+    .count('Post_Label_Relation.post_id as count')
+    .innerJoin('Post_Label_Relation', function() {
+      this.on('Post_Label_Relation.label_id', '=', 'Label.id');
+    })
+    .groupBy('Label.id');
   return rows.filter(item => item.name !== ' ');
 }
-

@@ -1,6 +1,7 @@
 import uuid from 'uuid/v1';
-import { insertSome } from '../service/postService';
 import { createAllTables } from '../db';
+import { insertSome } from '../service/postService';
+import { queryOneById } from '../service/articleService';
 const json = require('./posts.json');
 
 (async () => {
