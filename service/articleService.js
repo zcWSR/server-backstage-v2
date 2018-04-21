@@ -1,6 +1,7 @@
 const Log = require('log');
 
 import { db } from '../db';
+import moment from 'moment';
 
 const logger = new Log('ArticleService');
 
@@ -14,34 +15,14 @@ export async function queryOneById(id) {
       a.content as content,
       a.url as url,
       a.create_at as createAt,
-      a.lock as lock
-      i.id as img_id,
-      i.name as img_name,
-      i.url as img_url,
-      i.main_color as img_color
-      a.bg_main_color as bg_main_color
-      from Article a
-        left join Image i on i.id = a.image_id
+      a.lock as lock,
+      a.bg_url as bgUrl,
+      a.bg_color as bgColor
+      from Article a;
   `);
     if (rows.length) {
       const article = rows[0];
-      return {
-        id: article.id,
-        route: article.route,
-        shortName: article.shortName,
-        title: article.title,
-        content: article.content,
-        lock: !!article.lock,
-        url: article.url,
-        category: article.category,
-        labels: article.labels,
-        bg: {
-          id: article.img_id,
-          name: article.img_name,
-          url: article.img_url,
-          mainColor: article.img_color
-        }
-      };
+      return article;
     }
     return null;
 }
@@ -51,5 +32,17 @@ export async function queryOneById(id) {
  * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
  */
 export async function insertOne(article) {
-  
+  const ids = await db('Article').insert({
+    route: article.route,
+    short_name: article.shortName,
+    title: article.title,
+    content: article.content,
+    url: article.url,
+    create_at: new Date(),
+    update_at: new Date(),
+    lock: article.lock,
+    bg_url: article.bgUrl,
+    bg_color: article.bgColor
+  });
+  logger.info(`新建文章完成, id: ${ids[0]}`);
 }

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import CatchAsyncError from '../../utils/catchAsyncError';
 import ReturnJson from '../../utils/return-json';
 
 /**
@@ -10,8 +11,8 @@ export default function (router) {
     res.send('hello, blog!');
   })
 
-  router.get('/config', (req, res) => {
-    const defaultConfig = {
+  router.get('/config', CatchAsyncError(async (req, res) => {
+    const defaultConfig = await {
       blogName: 'zcWSR',
       slogen: '靡不有初, 鲜克有终',
       hostBg: {
@@ -25,5 +26,5 @@ export default function (router) {
       ]
     };
     ReturnJson.ok(res, defaultConfig);
-  })
+  }));
 }

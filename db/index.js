@@ -25,7 +25,8 @@ export async function createPostTable() {
     table.text('section');
     table.text('rest').nullable();
     table.integer('cate_id').references('Category.id');
-    table.integer('image_id').nullable().references('Image.id');
+    table.string('bg_color').nullable();
+    table.text('bg_url').nullable();
     table.boolean('lock').defaultTo(false);
   }).then(() => {
     logger.info(`table 'Post' 準備完了`);
@@ -71,20 +72,6 @@ export async function createPostLabelRelationTable() {
   });
 }
 
-export async function createImageTable() {
-  if (await db.schema.hasTable('Image')) return;
-  return await db.schema.createTable('Image', table => {
-    table.increments('id').primary();
-    table.string('name').nullable();
-    table.text('url');
-    table.string('main_color');
-  }).then(() => {
-    logger.info(`table 'Image' 準備完了`);
-  }).catch(err => {
-    logger.error(err);
-  });
-}
-
 export async function createArticalTable() {
   if (await db.schema.hasTable('Article')) return;
   return await db.schema.createTable('Article', table => {
@@ -96,8 +83,8 @@ export async function createArticalTable() {
     table.text('url').nullable();
     table.dateTime('create_at');
     table.dateTime('update_at');
-    table.integer('image_id').nullable();
-    table.string('bg_main_color').nullable();
+    table.integer('bg_url').nullable();
+    table.string('bg_color').nullable();
   }).then(() => {
     logger.info(`table 'Article' 準備完了`);
   }).catch(err => {
@@ -190,7 +177,6 @@ export async function createAllTables() {
     createLabelTable(),
     createPostLabelRelationTable(),
     createArticalTable(),
-    createImageTable(),
     createUserTable(),
     createViewHistory()
   ]).then(() => {

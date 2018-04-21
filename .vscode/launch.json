@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "test",
+            "name": "init",
             "program": "${workspaceFolder}/test/index.js"
         },
         {

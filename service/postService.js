@@ -8,7 +8,7 @@ const logger = new Log('postService');
 
 /**
  * 插入一条
- * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, imageId }} post 文章对象
+ * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, bgColor, bgUrl }} post 文章对象
  */
 export async function insertOne(post) {
   let postId = uuid();
@@ -26,9 +26,10 @@ export async function insertOne(post) {
     section: post.section,
     rest: post.rest,
     cate_id: cateId,
-    image_id: post.imageId
+    bg_color: post.bgColor,
+    bg_url: post.bgUrl
   });
-  logger.info(`新建文章完成, id: ${postId}`);
+  logger.info(`新建博文完成, id: ${postId}`);
   // sql并行会数据不同步
   // let labelPromises = post.labels.map(label => insertOneLabel(label, postId));
   // return await Promise.all(labelPromises);
@@ -112,38 +113,20 @@ export async function queryOneById(id) {
       p.lock as lock,
       c.name as category,
       group_concat(l.name, ',') as labels,
-      i.id as img_id,
-      i.name as img_name,
-      i.url as img_url,
-      i.main_color as img_color
+      p.bg_url as bgUrl,
+      p.bg_color as bgColor
         from (select * from Post where Post.id = '${id}') as p
         left join Post_Label_Relation pl on p.id = pl.post_id
         left join Label l on l.id = pl.label_id
-        left join Category c on c.id = p.cate_id
-        left join Image i on i.id = p.image_id`
+        left join Category c on c.id = p.cate_id`
   );
 
   if (!rows.length) return null;
 
   const post = rows[0];
   post.labels = post.labels ? post.labels.split(',') : [];
-  return {
-    id: post.id,
-    title: post.title,
-    createAt: post.createAt,
-    updateAt: post.updateAt,
-    section: post.section,
-    rest: post.rest,
-    lock: !!post.lock,
-    category: post.category,
-    labels: post.labels,
-    bg: {
-      id: post.img_id,
-      name: post.img_name,
-      url: post.img_url,
-      mainColor: img_color
-    }
-  };
+  post.lock = !!post.lock;
+  return post;
 }
 
 /**

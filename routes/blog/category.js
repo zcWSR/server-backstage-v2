@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import CatchAsyncError from '../../utils/catchAsyncError';
 import * as PostService from '../../service/postService'
 import ReturnJson from '../../utils/return-json';
 
@@ -8,15 +9,13 @@ import ReturnJson from '../../utils/return-json';
  */
 export default function (router) {
   
-  router.get('/categories', (req, res) => {
-    PostService.queryAllCates()
-      .then(data => ReturnJson.ok(res, data))
-      .catch(error => ReturnJson.error(res, error));
-  });
+  router.get('/categories', CatchAsyncError(async (req, res) => {
+    const data = await PostService.queryAllCates();
+    ReturnJson.ok(res, data);
+  }));
   
-  router.get('/categories/with-count', (req, res) => {
-    PostService.queryAllCatesWithCount()
-    .then(data => ReturnJson.ok(res, data))
-    .catch(error => ReturnJson.error(res, error));
-  });
+  router.get('/categories/with-count', CatchAsyncError(async (req, res) => {
+    const data = await PostService.queryAllCatesWithCount();
+    ReturnJson.ok(res, data);
+  }));
 }

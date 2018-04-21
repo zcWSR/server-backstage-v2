@@ -5,6 +5,7 @@ import Images from 'images';
 
 import * as PostService from '../../service/postService';
 import ReturnJson from '../../utils/return-json';
+import CatchAsyncError from '../../utils/catchAsyncError';
 import ImageUtil from '../../utils/img';
 
 /**

@@ -3,6 +3,7 @@ const Log = require('log');
 
 import * as PostService from '../../service/postService';
 import ReturnJson from '../../utils/return-json';
+import CatchAsyncError from '../../utils/catchAsyncError';
 
 
 const logger = new Log('route: /blog/posts');
@@ -22,41 +23,40 @@ export default function (router) {
     };
   }
 
-  router.get('/posts', (req, res) => {
+  router.get('/posts', CatchAsyncError(async (req, res) => {
     const page = req.query.page || 1;
     const pageSize = req.query.pageSize || 5;
-    getPosts(page, pageSize).then(data => ReturnJson.ok(res, data));
-  });
+    const postList = await getPosts(page, pageSize);
+    ReturnJson.ok(res, postList);
+  }));
   
-  router.post('/posts/upload', (req, res) => {
-    const post = req.body;
-    PostService.insertOne(post)
-      .then(() => ReturnJson.ok(res, null))
-      .catch(error => ReturnJson.error(res, error));
-  });
+  router.post('/posts/upload', CatchAsyncError(async (req, res) => {
+    const post = req.body.post;
+    await PostService.insertOne(post)
+    ReturnJson.ok(res, null);
+  }));
   
-  router.get('/posts/by-title/:title', (req, res) => {
+  router.get('/posts/by-title/:title', CatchAsyncError(async (req, res) => {
     logger.info('/posts/by-title/%s', req.params.title);
-    PostService.queryByTitle(req.params.title)
-      .then(data => ReturnJson.ok(res, data))
-      .catch(error => ReturnJson.error(res, error));
-  });
+    const data = await PostService.queryByTitle(req.params.title);
+    ReturnJson.ok(res, data);
+  }));
   
-  router.get('/posts/:id', (req, res) => {
+  router.get('/posts/:id', CatchAsyncError(async (req, res) => {
     let id = req.params.id;
     if (!id)
       ReturnJson.error(res, `not found post with id: ${id}`);
-    else
-      PostService.queryOneById(id)
-        .then(data => ReturnJson.ok(res, data))
-        .catch(error => ReturnJson.error(res, error));
-  });
+    else {
+      const data = await PostService.queryOneById(id)
+      ReturnJson.ok(res, data);
+    }
+  }));
 
-  router.delete('/posts/delete/:id', (req, res) => {
+  router.delete('/posts/delete/:id', CatchAsyncError(async (req, res) => {
     let id = req.params.id;
     if (!id)
-      ReturnJsonerror(res, `not found post with id: ${id}`);
+      ReturnJson.error(res, `not found post with id: ${id}`);
     else 
-      PostService
-  })
+      await PostService
+  }));
 }

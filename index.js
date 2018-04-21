@@ -4,12 +4,19 @@ const Log = require('log');
 
 import { setRoutes } from './utils/route';
 import { createAllTables } from './db';
+import JsonReturn from './utils/return-json';
 
 const logger = new Log('app');
 const app = express();
 
 app.use(bodyParser.json());
 setRoutes(app);
+app.use((err, req, res, next) => {
+  const errmsg = err.message || err.errmsg || err;
+  const code = err.code || 0;
+  logger.error(errmsg);
+  JsonReturn.error(res, errmsg, code);
+});
 
 const args = process.argv;
 let port = 2333;
