@@ -17,4 +17,9 @@ export default function (router) {
     const id = req.params.id;
     const data = await ArticleService.queryOneById(id)
   }));
+
+  router.post('/article/update/:id', CatchAsyncError(async (req, res) => {
+    const id = req.params.id;
+    const data = await ArticleService
+  }));
 }

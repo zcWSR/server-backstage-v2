@@ -35,13 +35,7 @@ export default function (router) {
     await PostService.insertOne(post)
     ReturnJson.ok(res, null);
   }));
-  
-  router.get('/posts/by-title/:title', CatchAsyncError(async (req, res) => {
-    logger.info('/posts/by-title/%s', req.params.title);
-    const data = await PostService.queryByTitle(req.params.title);
-    ReturnJson.ok(res, data);
-  }));
-  
+
   router.get('/posts/:id', CatchAsyncError(async (req, res) => {
     let id = req.params.id;
     if (!id)
@@ -52,7 +46,7 @@ export default function (router) {
     }
   }));
 
-  router.delete('/posts/delete/:id', CatchAsyncError(async (req, res) => {
+  router.post('/posts/delete/:id', CatchAsyncError(async (req, res) => {
     let id = req.params.id;
     if (!id)
       ReturnJson.error(res, `not found post with id: ${id}`);
