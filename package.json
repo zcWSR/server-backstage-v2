@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node www.js",
     "start:dev": "ENV=dev node www.js",
-    "init": "node ./init/index.js"
+    "start:dev:init": "node ./init/index.js&&ENV=dev node www.js"
   },
   "keywords": [
     "express",
@@ -26,6 +26,7 @@
     "body-parser": "^1.18.2",
     "chalk": "^2.3.0",
     "commander": "^2.13.0",
+    "current-processes": "^0.2.1",
     "express": "^4.16.2",
     "images": "^3.0.1",
     "inquirer": "^5.0.1",
