@@ -62,3 +62,10 @@ export async function updateOne(id, a) {
 
   return result[0];
 }
+
+export async function addViewHistory(id) {
+  await db('View_History').insert({
+    article_id: id,
+    create_at: new Date()
+  });
+}

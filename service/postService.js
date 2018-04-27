@@ -338,3 +338,10 @@ export async function queryAllLabelsWithCount() {
     .groupBy('Label.id');
   return rows.filter(item => item.name !== ' ');
 }
+
+export async function addViewHistory(id) {
+  await db('View_History').insert({
+    post_id: id,
+    create_at: new Date()
+  });
+}

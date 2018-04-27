@@ -53,4 +53,11 @@ export default function (router) {
     else 
       await PostService
   }));
+
+  router.get('/posts/report/:id', CatchAsyncError(async (req, res) => {
+    const postId = req.params.id;
+    await PostService.addViewHistory(postId);
+    ReturnJson.ok(res, '');
+  }));
+  
 }

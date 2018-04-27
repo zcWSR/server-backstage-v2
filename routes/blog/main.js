@@ -15,10 +15,8 @@ export default function (router) {
     const defaultConfig = await {
       blogName: 'zcWSR',
       slogen: '靡不有初, 鲜克有终',
-      hostBg: {
-        url: 'http://files.zcwsr.com/server-backstage-v2/src/imgs/bg5.jpg',
-        mainColor: '#4e7cb4'
-      },
+      bgUrl: 'http://files.zcwsr.com/server-backstage-v2/src/imgs/bg5.jpg',
+      bgColor: '#4e7cb4',
       postListPageSize: 5,
       articles: [
         { id: 1, route: 'resume', shortName: 'resume' },
