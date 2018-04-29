@@ -106,7 +106,7 @@ export async function createUserTable() {
   });
 }
 
-export async function createViewHistory() {
+export async function createViewHistoryTable() {
   if (await db.schema.hasTable('View_History')) return;
   return await db.schema.createTable('View_History', table => {
     table.increments('id').primary();
@@ -115,6 +115,25 @@ export async function createViewHistory() {
     table.dateTime('create_at');
   }).then(() => {
     logger.info(`table 'View_History' 準備完了`);
+  }).catch(err => {
+    logger.error(err);
+  });
+}
+
+export async function createBlogConfigTable() {
+  if (await db.schema.hasTable('Blog_Config')) return ;
+  return await db.schema.createTable('Blog_Config', table => {
+    table.increments('id').primary().defaultTo(1);
+    table.string('page_title').defaultTo('zcWSR的个人博客');
+    table.string('main_title').defaultTo('zcWSR');
+    table.string('sub_title').defaultTo('靡不有初, 鲜克有终');
+    table.text('weibo_link').defaultTo('https://weibo.com/u/5969891367');
+    table.text('github_link').defaultTo('https://github.com/zcWSR');
+    tale.text('mail_link').defaultTo('zhaocong@zcwsr.com');
+    table.string('footer').defaultTo('自豪的使用Angular2');
+    table.text('footer_link').defaultTo('http://angular.io');
+  }).then(() => {
+    logger.info(`table 'Blog_Config' 準備完了`);
   }).catch(err => {
     logger.error(err);
   });
@@ -178,7 +197,8 @@ export async function createAllTables() {
     createPostLabelRelationTable(),
     createArticalTable(),
     createUserTable(),
-    createViewHistory()
+    createViewHistoryTable(),
+    createBlogConfigTable()
   ]).then(() => {
     logger.info('全ての tables 準備完了');
   }).catch(err => {
