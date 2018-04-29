@@ -1,4 +1,4 @@
-export default class RetrunJson {
+export default class ReturnJson {
   static VERSION = '2.5';
 
   static ok(res, data, jsonp = true) {
@@ -6,14 +6,14 @@ export default class RetrunJson {
       data,
       errcode: 0,
       ret: true,
-      ver: RetrunJson.VERSION
+      ver: ReturnJson.VERSION
     };
     if (process.env.ENV === 'dev') {
       setTimeout(() => {
-        RetrunJson.returnResult(res, result, jsonp);
+        ReturnJson.returnResult(res, result, jsonp);
       }, 500);
     } else {
-      RetrunJson.returnResult(res, result, jsonp);
+      ReturnJson.returnResult(res, result, jsonp);
     }
   }
 
@@ -23,14 +23,14 @@ export default class RetrunJson {
       errmsg: error,
       errcode,
       ret: false,
-      ver: RetrunJson.VERSION
+      ver: ReturnJson.VERSION
     };
     if (process.env.ENV === 'dev') {
       setTimeout(() => {
-        RetrunJson.returnResult(res, result, jsonp);
+        ReturnJson.returnResult(res, result, jsonp);
       }, 500);
     } else {
-      RetrunJson.returnResult(res, result, jsonp);
+      ReturnJson.returnResult(res, result, jsonp);
     }
   }
 

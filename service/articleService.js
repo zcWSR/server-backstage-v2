@@ -46,3 +46,26 @@ export async function insertOne(article) {
   });
   logger.info(`新建文章完成, id: ${ids[0]}`);
 }
+
+export async function updateOne(id, a) {
+  const result = await db('Article').where('id', id)
+  .update({
+    route: a.route,
+    short_name: a.shortName,
+    title: a.title,
+    content: a.content,
+    utl: a.url,
+    update_at: new Date(),
+    bg_url: a.bgUrl,
+    bg_color: a.bgColor
+  });
+
+  return result[0];
+}
+
+export async function addViewHistory(id) {
+  await db('View_History').insert({
+    article_id: id,
+    create_at: new Date()
+  });
+}

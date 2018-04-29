@@ -1,4 +1,5 @@
 import uuid from 'uuid/v1';
+import moment from 'moment';
 import { createAllTables } from '../db';
 import { insertSome } from '../service/postService';
 import { queryOneById } from '../service/articleService';
@@ -15,8 +16,9 @@ const imgList = [];
 
 async function initPostData () {
   const posts = json.data.list.map(item => {
-    item.createAt = item.date;
-    item.updateAt = item.date;
+    const date = moment(item.date).toDate();
+    item.createAt = date;
+    item.updateAt = date;
     return item;
   });
   await insertSome(posts.reverse());
