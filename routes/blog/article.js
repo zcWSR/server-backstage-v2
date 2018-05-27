@@ -18,14 +18,34 @@ export default function (router) {
     const data = await ArticleService.queryOneById(id)
   }));
 
-  router.post('/article/update/:id', CatchAsyncError(async (req, res) => {
-    const id = req.params.id;
-    const data = await ArticleService
+  router.get('/articles', CatchAsyncError(async (req, res) => {
+    const rows = await ArticleService.queryAll();
+    ReturnJson.ok(res, rows);
+  }));
+
+  router.post('/article/lock', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    const lock = eval(req.body.lock);
+    const rows = await ArticleService.lockOne(id, lock);
+    ReturnJson.ok(res, '');
+  }));
+
+  router.post('article/delete', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    await ArticleService.deleteById(id);
+    ReturnJson.ok(res, '');
+  }))
+
+  router.post('/article/update', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    const article = req.body.article;
+    await ArticleService.updateOne(id, article);
+    ReturnJson.ok(res, '');
   }));
 
   router.get('/article/report/:id', CatchAsyncError(async (req, res) => {
     const id  = req.params.id;
-    await ArticleService.addViewHistory()
-    ReturnJson(res, '');
+    await ArticleService.addViewHistory();
+    ReturnJson.ok(res, '');
   }));
 }

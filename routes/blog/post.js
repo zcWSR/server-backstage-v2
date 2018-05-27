@@ -32,8 +32,30 @@ export default function (router) {
   
   router.post('/posts/upload', CatchAsyncError(async (req, res) => {
     const post = req.body.post;
-    await PostService.insertOne(post)
+    await PostService.uploadOne(post)
     ReturnJson.ok(res, null);
+  }));
+
+  router.get('/posts/search', CatchAsyncError(async (req, res) => {
+    const curPage = +req.query.curPage || 1;
+    const pageSize = +req.query.pageSize || 10;
+    const content = req.query.content;
+    const withLock = eval(req.query.withLock);
+    const list = await PostService.querySomeByTitle(curPage, pageSize, content, withLock);
+    const totalCount = await PostService.countWithTitle(content);
+    ReturnJson.ok(res, {
+      pageSize,
+      list,
+      totalCount,
+      curPage,
+      withLock
+    });
+  }));
+
+  router.get('/posts/report/:id', CatchAsyncError(async (req, res) => {
+    const postId = req.params.id;
+    await PostService.addViewHistory(postId);
+    ReturnJson.ok(res, '');
   }));
 
   router.get('/posts/:id', CatchAsyncError(async (req, res) => {
@@ -41,22 +63,21 @@ export default function (router) {
     if (!id)
       ReturnJson.error(res, `not found post with id: ${id}`);
     else {
-      const data = await PostService.queryOneById(id)
+      const data = await PostService.queryOneById(id);
       ReturnJson.ok(res, data);
     }
   }));
 
-  router.post('/posts/delete/:id', CatchAsyncError(async (req, res) => {
-    let id = req.params.id;
-    if (!id)
-      ReturnJson.error(res, `not found post with id: ${id}`);
-    else 
-      await PostService
+  router.post('/posts/lock', CatchAsyncError(async (req, res) => {
+    const lock = req.body.lock;
+    const id = req.body.id;
+    await PostService.lockOrUnLock(id, lock);
+    ReturnJson.ok(res, '');
   }));
 
-  router.get('/posts/report/:id', CatchAsyncError(async (req, res) => {
-    const postId = req.params.id;
-    await PostService.addViewHistory(postId);
+  router.post('/posts/delete', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    await PostService.deletePostById(id);
     ReturnJson.ok(res, '');
   }));
   

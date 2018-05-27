@@ -13,7 +13,7 @@ const logger = new Log('route: /blog/search');
  * @param {Router} router 
  */
 export default function (router) {
-  router.get('/search/post/:content', CatchAsyncError(async (req, res) => {
+  router.get('/search/title/:content', CatchAsyncError(async (req, res) => {
     const content = req.params.content;
     const page = +req.query.page || 1;
     const pageSize = +req.query.pageSize || 5;

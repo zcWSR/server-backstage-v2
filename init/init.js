@@ -1,6 +1,6 @@
 import uuid from 'uuid/v1';
 import moment from 'moment';
-import { createAllTables } from '../db';
+import { createAllTables, db } from '../db';
 import { insertSome } from '../service/postService';
 import { queryOneById } from '../service/articleService';
 const json = require('./posts.json');
@@ -10,7 +10,7 @@ const imgList = [];
 (async () => {
   await createAllTables();
   await initPostData();
-
+  await initBlogConfig();
   process.exit();
 })();
 
@@ -25,6 +25,6 @@ async function initPostData () {
 }
 
 
-async function initImgData () {
-  
+async function initBlogConfig() {
+  await db('Blog_Config').insert({ id: 1 });
 }

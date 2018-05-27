@@ -36,6 +36,39 @@ export async function insertOne(post) {
 }
 
 /**
+ * 插入一条
+ * @param {{ title: string, category: string, labels: string[], content: string, bgColor, bgUrl }} post 文章对象
+ */
+export async function uploadOne(post) {
+  let postId = uuid();
+  let cateId = await queryOrInsertOneCate(post.category);
+
+  for (let label of post.labels) {
+    await insertOneLabel(label, postId);
+  }
+
+  const split = post.content.split(/\n\s*<!--\s*more\s*-->\s*\n/i);
+  const section = split[0];
+  const rest = split[1] || ''
+
+  await db('Post').insert({
+    id: postId,
+    title: post.title,
+    create_at: new Date().getTime(),
+    update_at: new Date().getTime(),
+    section,
+    rest,
+    cate_id: cateId,
+    bg_color: post.bgColor,
+    bg_url: post.bgUrl
+  });
+  logger.info(`新建博文完成, id: ${postId}`);
+  // sql并行会数据不同步
+  // let labelPromises = post.labels.map(label => insertOneLabel(label, postId));
+  // return await Promise.all(labelPromises);
+}
+
+/**
  * 插入多条
  * @param {[{title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string}]} posts
  */
@@ -141,6 +174,45 @@ export async function querySome(page, pageSize, withLock = false) {
       pageSize}) as p`;
   } else {
     section = `from (select * from Post where lock = 0 order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
+  }
+  let rows = await db.raw(
+    `select
+      p.id as id,
+      p.title as title,
+      p.create_at as createAt,
+      p.update_at as updateAt,
+      p.section as section,
+      p.lock as lock,
+      c.name as category,
+      group_concat(l.name, ',') as labels
+        ${section}
+        left join Post_Label_Relation pl on p.id = pl.post_id
+        left join Label l on l.id = pl.label_id
+        left join Category c on c.id = p.cate_id
+        group by p.id
+        order by p.create_at desc`
+  );
+
+  return rows.map(item => {
+    item.labels = item.labels ? item.labels.split(',') : [];
+    return item;
+  });
+}
+
+/**
+ * 查找一部分博文, 根据题目，页大小 = 5
+ * @param {number} page 页
+ */
+export async function querySomeByTitle(page, pageSize, title, withLock = false) {
+  let section = '';
+  if (withLock) {
+    section = `from (select * from Post where title like '%${title}%' order by Post.create_at desc limit ${pageSize} offset ${(page -
+      1) *
+      pageSize}) as p`;
+  } else {
+    section = `from (select * from Post where lock = 0 and title like '%${title}%' order by Post.create_at desc limit ${pageSize} offset ${(page -
       1) *
       pageSize}) as p`;
   }
@@ -285,6 +357,19 @@ export async function queryByLabel(label, page, pageSize, withLock = false) {
   });
 }
 
+/**
+ * 为文章上锁或去锁
+ * @param {string} id 文章id
+ * @param {boolean} lock 是否锁定
+ */
+
+export async function lockOrUnLock(id, lock) {
+  return await db('Post').update('lock', lock ? 1 : 0).where('id', id);
+}
+
+/**
+ * 获取总文章数
+ */
 export async function countAllPost() {
   let data = await db('Post')
     .count('id as count')
@@ -292,6 +377,22 @@ export async function countAllPost() {
   return data.count;
 }
 
+/**
+ * 带标题计数
+ * @param {string} title 标题
+ */
+export async function countWithTitle(title) {
+  let data = await db('Post')
+  .count('id as count')
+  .where('title', 'like', `%${title}%`)
+  .first();
+  return data.count;
+}
+
+/**
+ * 删除文章
+ * @param {string} id 文章id
+ */
 export async function deletePostById(id) {
   return await db('Post')
     .where('id', id)
@@ -300,6 +401,9 @@ export async function deletePostById(id) {
 
 // ===================Label Category 相关 ===================
 
+/**
+ * 查询所有类别
+ */
 export async function queryAllCates() {
   let rows = await db('Category').select('name');
   return rows.reduce((prev, cur) => {
@@ -308,6 +412,9 @@ export async function queryAllCates() {
   }, []);
 }
 
+/**
+ * 查询所有类别带计数
+ */
 export async function queryAllCatesWithCount() {
   return await db('Category')
     .select('Category.name')
@@ -319,6 +426,9 @@ export async function queryAllCatesWithCount() {
     .groupBy('Category.id');
 }
 
+/**
+ *  查询所有标签
+ */
 export async function queryAllLabels() {
   let rows = await db('Label').select('name');
   return rows.reduce((prev, cur) => {
@@ -327,6 +437,9 @@ export async function queryAllLabels() {
   }, []);
 }
 
+/**
+ * 查询所有标签带计数
+ */
 export async function queryAllLabelsWithCount() {
   let rows = await db('Label')
     .select('Label.name')
@@ -339,6 +452,10 @@ export async function queryAllLabelsWithCount() {
   return rows.filter(item => item.name !== ' ');
 }
 
+/**
+ * 添加浏览历史记录
+ * @param {string} id 文章id
+ */
 export async function addViewHistory(id) {
   await db('View_History').insert({
     post_id: id,

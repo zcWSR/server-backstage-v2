@@ -15,6 +15,9 @@ app.use((err, req, res, next) => {
   const errmsg = err.message || err.errmsg || err;
   const code = err.code || 0;
   logger.error(errmsg);
+  if (err.stack) {
+    logger.error(err.stack)
+  }
   JsonReturn.error(res, errmsg, code);
 });
 

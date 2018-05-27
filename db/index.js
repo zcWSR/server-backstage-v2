@@ -125,18 +125,35 @@ export async function createBlogConfigTable() {
   return await db.schema.createTable('Blog_Config', table => {
     table.increments('id').primary().defaultTo(1);
     table.string('page_title').defaultTo('zcWSR的个人博客');
-    table.string('main_title').defaultTo('zcWSR');
-    table.string('sub_title').defaultTo('靡不有初, 鲜克有终');
+    table.string('blog_name').defaultTo('zcWSR');
+    table.string('slogen').defaultTo('靡不有初, 鲜克有终');
+    table.string('top_icon_url').defaultTo('https://a.ppy.sh/1434197?1519206255.png');
     table.text('weibo_link').defaultTo('https://weibo.com/u/5969891367');
     table.text('github_link').defaultTo('https://github.com/zcWSR');
-    tale.text('mail_link').defaultTo('zhaocong@zcwsr.com');
+    table.text('mail_link').defaultTo('zhaocong@zcwsr.com');
     table.string('footer').defaultTo('自豪的使用Angular2');
     table.text('footer_link').defaultTo('http://angular.io');
+    table.text('bg_url').defaultTo('http://files.zcwsr.com/server-backstage-v2/src/imgs/bg5.jpg');
+    table.string('bg_color').defaultTo('#4e7cb4');
+    table.string('page_size').defaultTo(5);
   }).then(() => {
     logger.info(`table 'Blog_Config' 準備完了`);
   }).catch(err => {
     logger.error(err);
   });
+}
+
+export async function createImageTable() {
+  if (await db.schema.hasTable('Image')) return ;
+  return await db.schema.createTable('Image', table => {
+    table.increments('id').primary();
+    table.string('name').unique();
+    table.string('main_color');
+    table.integer('size');
+    table.integer('width');
+    table.integer('height');
+    table.dateTime('create_at');
+  })
 }
 
 // export async function createRoleTable() {
@@ -198,7 +215,8 @@ export async function createAllTables() {
     createArticalTable(),
     createUserTable(),
     createViewHistoryTable(),
-    createBlogConfigTable()
+    createBlogConfigTable(),
+    createImageTable()
   ]).then(() => {
     logger.info('全ての tables 準備完了');
   }).catch(err => {

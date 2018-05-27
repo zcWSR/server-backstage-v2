@@ -1,31 +1,47 @@
 const Log = require('log');
 
 import { db } from '../db';
+import toSmallCamel from '../utils/toSmallCamel';
 import moment from 'moment';
 
 const logger = new Log('AdminService');
 
+/**
+ * 获取博客配置信息
+ */
 export async function getConfig() {
   const meta = await db('Blog_Config').first();
-  console.log(meta);
-  return meta;
+  return toSmallCamel(meta, '_');
 }
+
+/**
+ * 获取管理页dashboard座右铭
+ */
 export function getMotto() {
   const index = Math.floor(Math.random() * (mottos.length));
   return mottos[index];
 }
 
+/**
+ * 获取浏览记录
+ */
 export async function getViewCount() {
   const meta = await db('View_History').count('id as count').first();
   return meta.count;
 }
 
+/**
+ * 获取进入浏览记录
+ */
 export async function getTodayViewCount() {
   const meta = await db('View_History').count('id as count')
     .where('create_at', '>', moment().startOf('day').toDate().getTime()).first();
   return meta.count;
 }
 
+/**
+ * 获取浏览文章排名
+ */
 export async function getViewRank() {
   const rows = await db.raw(`
   select p.title as title, p.id as id, count(v.post_id) as count from View_History v 
@@ -36,8 +52,6 @@ export async function getViewRank() {
   
   return rows;
 }
-
-
 
 const mottos = [
   '强者的眼中，没有最好，只有更好。',

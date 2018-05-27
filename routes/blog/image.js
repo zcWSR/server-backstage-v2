@@ -3,7 +3,7 @@ import CatchAsyncError from '../../utils/catchAsyncError';
 import fs from 'fs';
 const multer = require('multer');
 
-import { uploadOne, uploadOneFromUrl, getImageList, deleteOne } from '../../service/imageService';
+import { insertOne, uploadOneFromUrl, querySome, deleteOne, deleteSome, countAll } from '../../service/imageService';
 import JsonReturn from '../../utils/return-json';
 
 const uploadFileMiddleware = multer({
@@ -11,7 +11,7 @@ const uploadFileMiddleware = multer({
   limits: {
     fileSize: 1024 * 1024 * 2
   }
-})
+});
 
 /**
  * 
@@ -27,7 +27,7 @@ export default function (router) {
         JsonReturn.error(res, 'no file uploaded', -2);
         return ;
       }
-      const fileInfo = await uploadOne(imgName, imgBuffer);
+      const fileInfo = await insertOne(imgName, imgBuffer);
       JsonReturn.ok(res, fileInfo);
       return ;
     } else {
@@ -43,15 +43,28 @@ export default function (router) {
   }));
 
   router.get('/img/list', CatchAsyncError(async (req, res) => {
-    const pageSize = req.query.pageSize || 2;
-    const marker = req.query.marker || '';
-    const list = await getImageList(pageSize, marker);
-    JsonReturn.ok(res, list);
+    const curPage = +req.query.page || 1;
+    const pageSize = +req.query.pageSize || 20;
+    const list = await querySome(curPage, pageSize);
+    const totalCount = await countAll();
+    JsonReturn.ok(res, {
+      pageSize,
+      list,
+      totalCount,
+      curPage
+    });
   }));
 
-  router.post('/img/delete/:name', CatchAsyncError(async (req, res) => {
-    const name = req.params.name;
-    const result = await deleteOne(name);
+  router.post('/img/delete', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    const result = await deleteOne(id);
+    JsonReturn.ok(res, result);
+  }));
+
+  router.post('/img/delete/some', CatchAsyncError(async (req, res) => {
+    let ids = req.body.ids;
+    ids = ids.split(',').map(id => id.trim());
+    const result = await deleteSome(ids);
     JsonReturn.ok(res, result);
   }));
 
