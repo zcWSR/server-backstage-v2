@@ -4,7 +4,6 @@ import { db } from '../db';
 import * as qiniu from 'qiniu';
 import { ACCESS_KEY, SECRET_KEY, IMAGE_HOST } from './qiniu.config';
 import toSmallCamel from '../utils/toSmallCamel';
-import moment from 'moment';
 
 
 const logger = new Log('imageService');
@@ -38,13 +37,14 @@ const buckgetManager = new qiniu.rs.BucketManager(mac, config);
  */
 export async function insertOne(fileName, fileBuffer) {
   const { name, mainColor: { RGB }, size, width, height } = await uploadOne(fileName, fileBuffer);
+  console.log(RGB);
   const forInsert = {
     name,
-    main_color: RGB.replace('0x0', '#'),
+    main_color: RGB.replace('0x', '#'),
     size,
     width,
     height,
-    create_at: moment().toDate()
+    create_at: new Date().getTime()
   };
   await db('image').insert(forInsert);
   return toSmallCamel(forInsert, '_');
