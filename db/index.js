@@ -83,6 +83,7 @@ export async function createArticalTable() {
     table.text('url').nullable();
     table.dateTime('create_at');
     table.dateTime('update_at');
+    table.boolean('lock').defaultTo(false);
     table.integer('bg_url').nullable();
     table.string('bg_color').nullable();
   }).then(() => {

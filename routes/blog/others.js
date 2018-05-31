@@ -49,18 +49,18 @@ export default function (router) {
     return result;
   }
   
-  router.get('/imgs', (req, res) => {
-    fs.readdir(path.resolve(__dirname, '../../src/imgs'), (error, files) => {
-      if (error)
-        ReturnJson.error(res, error);
-      else {
-        const filenames = files.filter(file => file !== '.DS_Store');
-        getFiles(filenames).then(result => {
-          ReturnJson.ok(res, result);
-        });
-      }
-    });
-  });
+  // router.get('/imgs', (req, res) => {
+  //   fs.readdir(path.resolve(__dirname, '../../src/imgs'), (error, files) => {
+  //     if (error)
+  //       ReturnJson.error(res, error);
+  //     else {
+  //       const filenames = files.filter(file => file !== '.DS_Store');
+  //       getFiles(filenames).then(result => {
+  //         ReturnJson.ok(res, result);
+  //       });
+  //     }
+  //   });
+  // });
 
   router.get('/imgs/random', (req, res) => {
     fs.readdir(path.resolve(__dirname, '../../src/imgs'), (error, files) => {

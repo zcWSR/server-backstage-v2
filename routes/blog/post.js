@@ -36,6 +36,13 @@ export default function (router) {
     ReturnJson.ok(res, null);
   }));
 
+  router.post('/post/update', CatchAsyncError(async (req, res) => {
+    const id = req.body.id;
+    const post = req.body.post;
+    await PostService.updateOne(post, id);
+    ReturnJson.ok(res, '');
+  }));
+
   router.get('/posts/search', CatchAsyncError(async (req, res) => {
     const curPage = +req.query.curPage || 1;
     const pageSize = +req.query.pageSize || 10;
@@ -64,7 +71,11 @@ export default function (router) {
       ReturnJson.error(res, `not found post with id: ${id}`);
     else {
       const data = await PostService.queryOneById(id);
-      ReturnJson.ok(res, data);
+      if (data.id) {
+        ReturnJson.ok(res, data);
+      } else {
+        ReturnJson.error(res, 'post not exist');
+      }
     }
   }));
 

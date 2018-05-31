@@ -42,7 +42,7 @@ export default function (router) {
     }
   }));
 
-  router.get('/img/list', CatchAsyncError(async (req, res) => {
+  router.get('/imgs', CatchAsyncError(async (req, res) => {
     const curPage = +req.query.page || 1;
     const pageSize = +req.query.pageSize || 20;
     const list = await querySome(curPage, pageSize);

@@ -7,7 +7,7 @@ import { queryOne } from './imageService';
 const logger = new Log('postService');
 
 /**
- * 插入一条
+ * 插入一条, 后端自动批量插入专用
  * @param {{ title: string, createAt: string, updateAt: string, category: string, labels: string[], section: string, rest: string, bgColor, bgUrl }} post 文章对象
  */
 export async function insertOne(post) {
@@ -38,11 +38,12 @@ export async function insertOne(post) {
 /**
  * 插入一条
  * @param {{ title: string, category: string, labels: string[], content: string, bgColor, bgUrl }} post 文章对象
+ * @param {string} id 预传入文章id
  */
-export async function uploadOne(post) {
-  let postId = uuid();
+export async function uploadOne(post, id) {
+  let postId = id || uuid();
   let cateId = await queryOrInsertOneCate(post.category);
-
+  console.log(post.labels);
   for (let label of post.labels) {
     await insertOneLabel(label, postId);
   }
@@ -50,11 +51,11 @@ export async function uploadOne(post) {
   const split = post.content.split(/\n\s*<!--\s*more\s*-->\s*\n/i);
   const section = split[0];
   const rest = split[1] || ''
-
+  console.log(section, rest);
   await db('Post').insert({
     id: postId,
     title: post.title,
-    create_at: new Date().getTime(),
+    create_at: id ? post.createAt : new Date().getTime(), 
     update_at: new Date().getTime(),
     section,
     rest,
@@ -79,6 +80,17 @@ export async function insertSome(posts) {
   // sql并行会出现数据不同步
   // let promises = posts.map(post => insertOne(post));
   // return await Promise.all(promises);
+}
+
+/**
+ * 
+ * @param {{ title: string, category: string, labels: string[], content: string, bgColor, bgUrl }} post 文章对象
+ * @param {string} id 预传入文章id
+ */
+export async function updateOne(post, id) {
+  await deletePostById(id);
+  await db('Post_Label_Relation').where('post_id', id).del();
+  await uploadOne(post, id);
 }
 
 /**
@@ -394,9 +406,8 @@ export async function countWithTitle(title) {
  * @param {string} id 文章id
  */
 export async function deletePostById(id) {
-  return await db('Post')
-    .where('id', id)
-    .del();
+  await db('Post').where('id', id).del();
+  await db('Post_Label_Relation').where('post_id', id).del();
 }
 
 // ===================Label Category 相关 ===================

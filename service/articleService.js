@@ -25,6 +25,7 @@ export async function queryOneById(id) {
       from Article a
       where a.id = ${id}
   `);
+    console.log(rows);
     if (rows.length) {
       const article = rows[0];
       return article;
@@ -36,7 +37,7 @@ export async function queryOneById(id) {
  * 查询所有小文章
  */
 export async function queryAll() {
-  const rows = await db.rows(
+  const rows = await db.raw(
     `select
       a.id as id,
       a.route as route,
@@ -44,7 +45,7 @@ export async function queryAll() {
       a.title as title,
       a.create_at as createAt,
       a.update_at as updateAt,
-      a.lock as lock,
+      a.lock as lock
       from Article a
   `);
   return rows;
