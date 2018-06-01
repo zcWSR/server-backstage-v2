@@ -76,11 +76,10 @@ export async function createArticalTable() {
   if (await db.schema.hasTable('Article')) return;
   return await db.schema.createTable('Article', table => {
     table.increments('id').primary();
+    table.string('title');
     table.string('route');
     table.string('short_name');
-    table.string('title');
     table.text('content').nullable();
-    table.text('url').nullable();
     table.dateTime('create_at');
     table.dateTime('update_at');
     table.boolean('lock').defaultTo(false);
