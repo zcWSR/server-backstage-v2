@@ -45,6 +45,7 @@ export async function queryAll() {
       a.update_at as updateAt,
       a.lock as lock
       from Article a
+      order by update_at desc
   `);
   return rows;
 }

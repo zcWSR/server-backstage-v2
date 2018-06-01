@@ -37,7 +37,7 @@ export default function (router) {
     ReturnJson.ok(res, '');
   }));
 
-  router.post('article/delete', CatchAsyncError(async (req, res) => {
+  router.post('/article/delete', CatchAsyncError(async (req, res) => {
     const id = req.body.id;
     await ArticleService.deleteById(id);
     ReturnJson.ok(res, '');
