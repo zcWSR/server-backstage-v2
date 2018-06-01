@@ -17,7 +17,8 @@
             "program": "${workspaceFolder}/www.js",
             "env": {
                 "ENV": "develop"
-            }
+            },
+            "console": "integratedTerminal"
         }
     ]
 }

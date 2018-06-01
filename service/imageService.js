@@ -37,10 +37,9 @@ const buckgetManager = new qiniu.rs.BucketManager(mac, config);
  */
 export async function insertOne(fileName, fileBuffer) {
   const { name, mainColor: { RGB }, size, width, height } = await uploadOne(fileName, fileBuffer);
-  console.log(RGB);
   const forInsert = {
     name,
-    main_color: RGB.replace('0x', '#'),
+    main_color: `${RGB}`.replace('0x', '#'),
     size,
     width,
     height,

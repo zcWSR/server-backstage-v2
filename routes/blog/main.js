@@ -13,15 +13,10 @@ export default function (router) {
   })
 
   router.get('/config', CatchAsyncError(async (req, res) => {
-    const data = await AdminService.getConfig();
+    const data = await AdminService.getConfigForBlog();
     const ps = data.pageSize;
     delete data.pageSize;
     data.postListPageSize = ps;
-    data.articles = [
-      { id: 1, route: 'resume', shortName: 'resume' },
-      { id: 2, route: 'aboutme', shortName: '关于我' }
-    ];
-    
     // const defaultConfig = await {
     //   blogName: 'zcWSR',
     //   slogen: '靡不有初, 鲜克有终',

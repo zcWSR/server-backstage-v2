@@ -131,11 +131,11 @@ export async function createBlogConfigTable() {
     table.text('weibo_link').defaultTo('https://weibo.com/u/5969891367');
     table.text('github_link').defaultTo('https://github.com/zcWSR');
     table.text('mail_link').defaultTo('zhaocong@zcwsr.com');
+    table.string('page_size').defaultTo(5);
     table.string('footer').defaultTo('自豪的使用Angular2');
     table.text('footer_link').defaultTo('http://angular.io');
     table.text('bg_url').defaultTo('http://files.zcwsr.com/server-backstage-v2/src/imgs/bg5.jpg');
     table.string('bg_color').defaultTo('#4e7cb4');
-    table.string('page_size').defaultTo(5);
   }).then(() => {
     logger.info(`table 'Blog_Config' 準備完了`);
   }).catch(err => {

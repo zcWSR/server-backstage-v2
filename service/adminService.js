@@ -11,14 +11,64 @@ const logger = new Log('AdminService');
  */
 export async function getConfig() {
   const meta = await db('Blog_Config').first();
+
   return toSmallCamel(meta, '_');
+}
+
+/**
+ * 获取博客配置信息(博客前端专用)
+ */
+export async function getConfigForBlog() {
+  const config = await getConfig();
+  const articleMeta = await db('Article')
+    .select('id', 'route', { shortName: 'short_name' })
+    .orderBy('create_at', 'desc');
+  config.articles = articleMeta;
+  return config;
+}
+
+/**
+ *
+ * @param {{ pageTitle, blogName, slogen, topIconUrl, weiboLink, githubLink, mailLink, pageSize, footer, footerLink, bgUrl, bgColor }} config 博客配置对象
+ */
+export async function updateConfig(config) {
+  const {
+    pageTitle,
+    blogName,
+    slogen,
+    topIconUrl,
+    weiboLink,
+    githubLink,
+    mailLink,
+    pageSize,
+    footer,
+    footerLink,
+    bgUrl,
+    bgColor
+  } = config;
+  await db('Blog_Config')
+    .where('id', 1)
+    .update({
+      'page_title': pageTitle,
+      'blog_name': blogName,
+      'slogen': slogen,
+      'top_icon_url': topIconUrl,
+      'weibo_link': weiboLink,
+      'github_link': githubLink,
+      'mail_link': mailLink,
+      'page_size': pageSize,
+      'footer': footer,
+      'footer_link': footerLink,
+      'bg_url': bgUrl,
+      'bg_color': bgColor
+    });
 }
 
 /**
  * 获取管理页dashboard座右铭
  */
 export function getMotto() {
-  const index = Math.floor(Math.random() * (mottos.length));
+  const index = Math.floor(Math.random() * mottos.length);
   return mottos[index];
 }
 
@@ -26,7 +76,9 @@ export function getMotto() {
  * 获取浏览记录
  */
 export async function getViewCount() {
-  const meta = await db('View_History').count('id as count').first();
+  const meta = await db('View_History')
+    .count('id as count')
+    .first();
   return meta.count;
 }
 
@@ -34,8 +86,17 @@ export async function getViewCount() {
  * 获取进入浏览记录
  */
 export async function getTodayViewCount() {
-  const meta = await db('View_History').count('id as count')
-    .where('create_at', '>', moment().startOf('day').toDate().getTime()).first();
+  const meta = await db('View_History')
+    .count('id as count')
+    .where(
+      'create_at',
+      '>',
+      moment()
+        .startOf('day')
+        .toDate()
+        .getTime()
+    )
+    .first();
   return meta.count;
 }
 
@@ -47,9 +108,8 @@ export async function getViewRank() {
   select p.title as title, p.id as id, count(v.post_id) as count from View_History v 
     left join Post as p on p.id = v.post_id 
     group by v.post_id
-    order by count desc limit 5`
-  );
-  
+    order by count desc limit 5`);
+
   return rows;
 }
 

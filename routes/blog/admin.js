@@ -12,6 +12,7 @@ const Log = require('log');
  * @param {Router} router
  */
 export default function (router) {
+  //#region dashboard 相关
   router.get('/admin/server-status', (req, res) => {
     ps.get((err, pses) => {
       if (err) ReturnJson.error(res, err);
@@ -35,8 +36,23 @@ export default function (router) {
     const rank = await AdminService.getViewRank();
     ReturnJson.ok(res, rank);
   }))
+
+  //#endregion
+
+  router.get('/admin/config', CatchAsyncError(async (req, res) => {
+    const data = await AdminService.getConfig();
+    ReturnJson.ok(res, data);
+  }));
+
+  router.post('/admin/config/update', CatchAsyncError(async (req, res) => {
+    const config = req.body.config;
+    await AdminService.updateConfig(config);
+    ReturnJson.ok(res, '');
+  }));
+
+
   router.get('/admin/login', CatchAsyncError(async (req, res) => {
-    
+    ReturnJson.ok(res, data);
   }));
 
 }
