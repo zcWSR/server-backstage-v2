@@ -16,11 +16,18 @@ export default function (router) {
   router.get('/article/:id', CatchAsyncError(async (req, res) => {
     const id = req.params.id;
     const data = await ArticleService.queryOneById(id)
+    ReturnJson.ok(res, data);
   }));
 
   router.get('/articles', CatchAsyncError(async (req, res) => {
     const rows = await ArticleService.queryAll();
     ReturnJson.ok(res, rows);
+  }));
+
+  router.post('/article/upload', CatchAsyncError(async (req, res) => {
+    const article = req.body.article;
+    await ArticleService.insertOne(article);
+    ReturnJson.ok(res, '');
   }));
 
   router.post('/article/lock', CatchAsyncError(async (req, res) => {

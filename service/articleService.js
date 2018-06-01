@@ -13,11 +13,10 @@ export async function queryOneById(id) {
   const rows = await db.raw(
     `select
       a.id as id,
+      a.title as title,
       a.route as route,
       a.short_name as shortName,
-      a.title as title,
       a.content as content,
-      a.url as url,
       a.create_at as createAt,
       a.lock as lock,
       a.bg_url as bgUrl,
@@ -25,7 +24,6 @@ export async function queryOneById(id) {
       from Article a
       where a.id = ${id}
   `);
-    console.log(rows);
     if (rows.length) {
       const article = rows[0];
       return article;
