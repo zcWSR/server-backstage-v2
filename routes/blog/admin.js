@@ -7,6 +7,8 @@ import CatchAsyncError from '../../utils/catchAsyncError';
 
 const Log = require('log');
 
+const logger = new Log('route: /blog/admin')
+
 /**
  * 
  * @param {Router} router
@@ -51,8 +53,32 @@ export default function (router) {
   }));
 
 
-  router.get('/admin/login', CatchAsyncError(async (req, res) => {
-    ReturnJson.ok(res, data);
+  router.post('/admin/login', CatchAsyncError(async (req, res) => {
+    const { username, password } = req.body;
+    const result = await AdminService.checkLogin(username || '', password || '');
+    if (!result) {
+      logger.info('login checked');
+      const token = AdminService.genToken(username);
+      logger.info('gen token');
+      logger.info('writing token to session, cookie, dataBase...');
+      req.session.token = token;
+      res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 10, signed: true });
+      res.cookie('username', username, { maxAge: 1000 * 60 * 60 * 24 * 10 });
+      await AdminService.updateToken(username, token);
+      logger.info('token write done');
+      ReturnJson.ok(res, '');
+    } else {
+      ReturnJson.ok(res, result);
+    }
+  }));
+
+  router.post('/admin/logout', CatchAsyncError(async (req, res) => {
+    const username = req.body.username;
+    req.session.token = '';
+    res.clearCookie('token');
+    res.clearCookie('username');
+    await AdminService.clearToken(username);
+    ReturnJson.ok(res, '');
   }));
 
 }

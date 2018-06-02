@@ -96,9 +96,9 @@ export async function createUserTable() {
   if (await db.schema.hasTable('User')) return;
   return await db.schema.createTable('User', table => {
     table.increments('id').primary();
-    table.string('user_name');
-    // table.string('email');
-    table.string('password');
+    table.string('user_name').notNullable();
+    table.string('password').notNullable();
+    table.string('token');
   }).then(() => {
     logger.info(`table 'User' 準備完了`);
   }).catch(err => {

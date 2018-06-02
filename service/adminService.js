@@ -1,5 +1,6 @@
 const Log = require('log');
 
+import crypto from 'crypto';
 import { db } from '../db';
 import toSmallCamel from '../utils/toSmallCamel';
 import moment from 'moment';
@@ -11,7 +12,6 @@ const logger = new Log('AdminService');
  */
 export async function getConfig() {
   const meta = await db('Blog_Config').first();
-
   return toSmallCamel(meta, '_');
 }
 
@@ -111,6 +111,36 @@ export async function getViewRank() {
     order by count desc limit 5`);
 
   return rows;
+}
+
+export async function checkLogin(username, password) {
+  const adminInfo = await db('User').where('user_name', username).first();
+  if (adminInfo) {
+    if (adminInfo.password !== password) {
+      return '密码错误';
+    } else {
+      return '';
+    }
+  } else {
+    return '用户名不正确';
+  }
+}
+export async function queryUserByToken(token) {
+  return await db('User').select({ username: 'user_name' })
+  .where('token', token).first();
+}
+
+export async function updateToken(userName, token) {
+  await db('User').where('user_name', userName).update({ token });
+}
+
+export async function clearToken(userName) {
+  await db('User').where('user_name', userName).update({ token: '' });
+}
+
+export function genToken(username) {
+  const md5 = crypto.createHash('md5');
+  return md5.update(`${username}/${new Date().getTime}`).digest('base64');
 }
 
 const mottos = [

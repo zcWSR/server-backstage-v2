@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import CatchAsyncError from '../../utils/catchAsyncError';
 import fs from 'fs';
 const multer = require('multer');
 
-import { insertOne, uploadOneFromUrl, querySome, deleteOne, deleteSome, countAll } from '../../service/imageService';
+import loginCheck from '../../middleware/loginCheckMiddleware';
+import CatchAsyncError from '../../utils/catchAsyncError';
 import JsonReturn from '../../utils/return-json';
+import { insertOne, uploadOneFromUrl, querySome, deleteOne, deleteSome, countAll } from '../../service/imageService';
 
 const uploadFileMiddleware = multer({
   storage: multer.memoryStorage(),
@@ -42,7 +43,7 @@ export default function (router) {
     }
   }));
 
-  router.get('/imgs', CatchAsyncError(async (req, res) => {
+  router.get('/imgs', loginCheck, CatchAsyncError(async (req, res) => {
     const curPage = +req.query.page || 1;
     const pageSize = +req.query.pageSize || 20;
     const list = await querySome(curPage, pageSize);
