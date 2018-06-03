@@ -19,7 +19,7 @@ const uploadFileMiddleware = multer({
  * @param {Router} router 
  */
 export default function (router) {
-  router.post('/img/upload', uploadFileMiddleware.single('img'),
+  router.post('/img/upload', loginCheck, uploadFileMiddleware.single('img'),
   CatchAsyncError(async (req, res) => {
     if(req.file) {
       const imgBuffer = req.file.buffer;

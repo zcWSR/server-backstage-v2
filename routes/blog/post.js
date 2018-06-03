@@ -1,6 +1,7 @@
 import { Router } from 'express';
 const Log = require('log');
 
+import loginCheck from '../../middleware/loginCheckMiddleware';
 import * as PostService from '../../service/postService';
 import ReturnJson from '../../utils/return-json';
 import CatchAsyncError from '../../utils/catchAsyncError';
@@ -30,13 +31,13 @@ export default function (router) {
     ReturnJson.ok(res, postList);
   }));
   
-  router.post('/posts/upload', CatchAsyncError(async (req, res) => {
+  router.post('/posts/upload', loginCheck, CatchAsyncError(async (req, res) => {
     const post = req.body.post;
     await PostService.uploadOne(post)
     ReturnJson.ok(res, null);
   }));
 
-  router.post('/post/update', CatchAsyncError(async (req, res) => {
+  router.post('/post/update', loginCheck, CatchAsyncError(async (req, res) => {
     const id = req.body.id;
     const post = req.body.post;
     await PostService.updateOne(post, id);
@@ -79,14 +80,14 @@ export default function (router) {
     }
   }));
 
-  router.post('/posts/lock', CatchAsyncError(async (req, res) => {
+  router.post('/posts/lock', loginCheck, CatchAsyncError(async (req, res) => {
     const lock = req.body.lock;
     const id = req.body.id;
     await PostService.lockOrUnLock(id, lock);
     ReturnJson.ok(res, '');
   }));
 
-  router.post('/posts/delete', CatchAsyncError(async (req, res) => {
+  router.post('/posts/delete', loginCheck, CatchAsyncError(async (req, res) => {
     const id = req.body.id;
     await PostService.deletePostById(id);
     ReturnJson.ok(res, '');
