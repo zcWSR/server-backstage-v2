@@ -77,9 +77,34 @@ export default function (router) {
     req.session.token = '';
     res.clearCookie('token');
     res.clearCookie('username');
-    await AdminService.clearToken(username);
+    // await AdminService.clearToken(username);
     ReturnJson.ok(res, '');
   }));
 
+  router.post('/admin/username/update', CatchAsyncError(async (req, res) => {
+    const { oldUsername, newUsername, password } = req.body;
+    const result = await AdminService.updateUsername(oldUsername, newUsername, password);
+    if (result) {
+      ReturnJson.ok(res, result);
+    } else {
+      req.session.token = '';
+      res.clearCookie('token');
+      res.clearCookie('username');
+      ReturnJson.ok(res, '');
+    }
+  }));
+
+  router.post('/admin/password/update', CatchAsyncError(async (req, res) => {
+    const { username, oldPassword, newPassword } = req.body;
+    const result = await AdminService.updatePassword(username, oldPassword, newPassword);
+    if (result) {
+      ReturnJson.ok(res, result);
+    } else {
+      req.session.token = '';
+      res.clearCookie('token');
+      res.clearCookie('username');
+      ReturnJson.ok(res, '');
+    }
+  }));
 }
 

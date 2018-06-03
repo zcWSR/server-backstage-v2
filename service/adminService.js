@@ -143,6 +143,30 @@ export function genToken(username) {
   return md5.update(`${username}/${new Date().getTime}`).digest('base64');
 }
 
+export async function updateUsername(oldUsername, newUsername, password) {
+  const adminInfo = await db('User')
+  .where({ 'user_name': oldUsername, 'password': password }).first();
+  if (adminInfo) {
+    await db('User')
+    .update({ 'user_name': newUsername }).where('user_name', oldUsername);
+    return '';
+  } else {
+    return '用户信息校验失败';
+  }
+}
+
+export async function updatePassword(username, oldPassword, newPassword) {
+  const adminInfo = await db('User')
+  .where({ 'user_name': username, 'password': oldPassword }).first();
+  if (adminInfo) {
+    await db('User')
+    .update({ 'password': newPassword }).where('user_name', username);
+    return '';
+  } else {
+    return '用户信息校验失败';
+  }
+}
+
 const mottos = [
   '强者的眼中，没有最好，只有更好。',
   '盆景秀木正因为被人溺爱，才破灭了成为栋梁之材的梦。',
