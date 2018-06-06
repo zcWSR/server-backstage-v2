@@ -27,7 +27,7 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 10 },
   rolling: true
 }));
-setRoutes(app);
+setRoutes(app, 'api');
 app.use((err, req, res, next) => {
   const errmsg = err.message || err.errmsg || err;
   const code = err.code || 0;

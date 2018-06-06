@@ -11,9 +11,10 @@ import { db } from '../db';
 const logger = new Log('route');
 /**
  * 自动扫描routes下的文件夹,并按文件夹对路由模块进行挂载
- * @param {express} app 
+ * @param {express} app express对象
+ * @param {string} prefix 路由总前缀
  */
-export function setRoutes(app) {
+export function setRoutes(app, prefix) {
     const routerNames = fs.readdirSync(path.resolve(__dirname, '../', 'routes/'))
         .map(name => {
             // 如果文件夹名为main则识别为根
@@ -24,7 +25,7 @@ export function setRoutes(app) {
         const router = Router();
         const dirPath = path.resolve(__dirname, '../routes/', routerName || 'main');
         execRequires(requireAll(dirPath), router);
-        app.use(`/${routerName}`, router);
+        app.use(`/${prefix}/${routerName}`, router);
     }
     logger.info('路由扫描完成');
 }
