@@ -13,7 +13,6 @@ async function checkLoginMiddleware(req, res, next) {
     }
   } else if (cookieToken && !sessionToken) {
     const user = await AdminService.queryUserByToken(cookieToken);
-    console.log(user);
     if (!user) { ReturnJson.error(res, '解析用户信息出错, 请清除cookie重试'); return; }
     const newToken = AdminService.genToken(user.username);
     req.session.token = newToken;

@@ -25,7 +25,7 @@ export function setRoutes(app, prefix) {
         const router = Router();
         const dirPath = path.resolve(__dirname, '../routes/', routerName || 'main');
         execRequires(requireAll(dirPath), router);
-        app.use(`/${prefix}/${routerName}`, router);
+        app.use(`${prefix ? '/' + prefix : ''}/${routerName}`, router);
     }
     logger.info('路由扫描完成');
 }

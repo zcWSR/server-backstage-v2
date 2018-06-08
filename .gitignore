@@ -7,3 +7,4 @@ yarn-error.log
 package-lock.json
 db/db.sqlite-journal
 qiniu.config.js
+dump.rdb

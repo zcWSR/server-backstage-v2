@@ -27,7 +27,11 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 10 },
   rolling: true
 }));
-setRoutes(app, 'api');
+if (process.env.ENV === 'dev') {
+  setRoutes(app);
+} else {
+  setRoutes(app, 'api');
+}
 app.use((err, req, res, next) => {
   const errmsg = err.message || err.errmsg || err;
   const code = err.code || 0;
@@ -48,6 +52,7 @@ if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
 }
 let server = app.listen(port);
 logger.info(`server in ${process.env.ENV || 'prod'} mode`);
+logger.info(`all routes mounted under '/${process.env.ENV === 'dev' ? '' : 'api'}'`);
 logger.alert(`ご注意ください`);
 
 server.on('error', (err) => {

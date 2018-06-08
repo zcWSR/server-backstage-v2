@@ -43,7 +43,6 @@ export async function insertOne(post) {
 export async function uploadOne(post, id) {
   let postId = id || uuid();
   let cateId = await queryOrInsertOneCate(post.category);
-  console.log(post.labels);
   for (let label of post.labels) {
     await insertOneLabel(label, postId);
   }
@@ -51,7 +50,6 @@ export async function uploadOne(post, id) {
   const split = post.content.split(/\n\s*<!--\s*more\s*-->\s*\n/i);
   const section = split[0];
   const rest = split[1] || ''
-  console.log(section, rest);
   await db('Post').insert({
     id: postId,
     title: post.title,
