@@ -166,6 +166,13 @@ aws4@^1.2.1, aws4@^1.6.0:
   version "1.7.0"
   resolved "http://registry.npm.taobao.org/aws4/download/aws4-1.7.0.tgz#d4d0e9b9dbfca77bf08eeb0a8a471550fe39e289"
 
+axios@^0.18.0:
+  version "0.18.0"
+  resolved "http://registry.npm.taobao.org/axios/download/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
+  dependencies:
+    follow-redirects "^1.3.0"
+    is-buffer "^1.1.5"
+
 babel-code-frame@^6.26.0:
   version "6.26.0"
   resolved "http://registry.npm.taobao.org/babel-code-frame/download/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -1060,6 +1067,13 @@ crc@3.4.4:
   version "3.4.4"
   resolved "http://registry.npm.taobao.org/crc/download/crc-3.4.4.tgz#9da1e980e3bd44fc5c93bf5ab3da3378d85e466b"
 
+cron-parser@^2.4.0:
+  version "2.5.0"
+  resolved "http://registry.npm.taobao.org/cron-parser/download/cron-parser-2.5.0.tgz#ec1385a3aa8c63624256789ce2ecfa338384676a"
+  dependencies:
+    is-nan "^1.2.1"
+    moment-timezone "^0.5.0"
+
 cryptiles@2.x.x:
   version "2.0.5"
   resolved "http://registry.npm.taobao.org/cryptiles/download/cryptiles-2.0.5.tgz#3bdfecdc608147c1c67202fa291e7dca59eaa3b8"
@@ -1114,6 +1128,13 @@ default-user-agent@^1.0.0:
   resolved "http://registry.npm.taobao.org/default-user-agent/download/default-user-agent-1.0.0.tgz#16c46efdcaba3edc45f24f2bd4868b01b7c2adc6"
   dependencies:
     os-name "~1.0.3"
+
+define-properties@^1.1.1:
+  version "1.1.2"
+  resolved "http://registry.npm.taobao.org/define-properties/download/define-properties-1.1.2.tgz#83a73f2fea569898fb737193c8f873caf6d45c94"
+  dependencies:
+    foreach "^2.0.5"
+    object-keys "^1.0.8"
 
 define-property@^0.2.5:
   version "0.2.5"
@@ -1402,6 +1423,12 @@ flagged-respawn@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/flagged-respawn/download/flagged-respawn-1.0.0.tgz#4e79ae9b2eb38bf86b3bb56bf3e0a56aa5fcabd7"
 
+follow-redirects@^1.3.0:
+  version "1.5.0"
+  resolved "http://registry.npm.taobao.org/follow-redirects/download/follow-redirects-1.5.0.tgz#234f49cf770b7f35b40e790f636ceba0c3a0ab77"
+  dependencies:
+    debug "^3.1.0"
+
 for-each@^0.3.2:
   version "0.3.2"
   resolved "http://registry.npm.taobao.org/for-each/download/for-each-0.3.2.tgz#2c40450b9348e97f281322593ba96704b9abd4d4"
@@ -1417,6 +1444,10 @@ for-own@^1.0.0:
   resolved "http://registry.npm.taobao.org/for-own/download/for-own-1.0.0.tgz#c63332f415cedc4b04dbfe70cf836494c53cb44b"
   dependencies:
     for-in "^1.0.1"
+
+foreach@^2.0.5:
+  version "2.0.5"
+  resolved "http://registry.npm.taobao.org/foreach/download/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
 
 forever-agent@~0.6.1:
   version "0.6.1"
@@ -1852,6 +1883,12 @@ is-glob@^3.1.0:
   dependencies:
     is-extglob "^2.1.0"
 
+is-nan@^1.2.1:
+  version "1.2.1"
+  resolved "http://registry.npm.taobao.org/is-nan/download/is-nan-1.2.1.tgz#9faf65b6fb6db24b7f5c0628475ea71f988401e2"
+  dependencies:
+    define-properties "^1.1.1"
+
 is-number@^3.0.0:
   version "3.0.0"
   resolved "http://registry.npm.taobao.org/is-number/download/is-number-3.0.0.tgz#24fd6201a4782cf50561c810276afc7d12d71195"
@@ -2076,6 +2113,10 @@ log@^1.4.0:
   version "1.4.0"
   resolved "http://registry.npm.taobao.org/log/download/log-1.4.0.tgz#4ba1d890fde249b031dca03bc37eaaf325656f1c"
 
+long-timeout@0.1.1:
+  version "0.1.1"
+  resolved "http://registry.npm.taobao.org/long-timeout/download/long-timeout-0.1.1.tgz#9721d788b47e0bcb5a24c2e2bee1a0da55dab514"
+
 loose-envify@^1.0.0:
   version "1.3.1"
   resolved "http://registry.npm.taobao.org/loose-envify/download/loose-envify-1.3.1.tgz#d1a8ad33fa9ce0e713d65fdd0ac8b748d478c848"
@@ -2187,6 +2228,16 @@ mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+moment-timezone@^0.5.0:
+  version "0.5.17"
+  resolved "http://registry.npm.taobao.org/moment-timezone/download/moment-timezone-0.5.17.tgz#3c8fef32051d84c3af174d91dc52977dcb0ad7e5"
+  dependencies:
+    moment ">= 2.9.0"
+
+"moment@>= 2.9.0":
+  version "2.22.2"
+  resolved "http://registry.npm.taobao.org/moment/download/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
+
 moment@^2.20.1:
   version "2.22.0"
   resolved "http://registry.npm.taobao.org/moment/download/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
@@ -2279,6 +2330,14 @@ node-pre-gyp@~0.6.38:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
+node-schedule@^1.3.0:
+  version "1.3.0"
+  resolved "http://registry.npm.taobao.org/node-schedule/download/node-schedule-1.3.0.tgz#e7a7e816a7f2550d5b170bd106e765db28bdf030"
+  dependencies:
+    cron-parser "^2.4.0"
+    long-timeout "0.1.1"
+    sorted-array-functions "^1.0.0"
+
 node-vibrant@^3.0.0:
   version "3.0.0"
   resolved "http://registry.npm.taobao.org/node-vibrant/download/node-vibrant-3.0.0.tgz#3ef4540dea2bdd7680ed181b8b08eaddfe74a568"
@@ -2337,6 +2396,10 @@ object-copy@^0.1.0:
     copy-descriptor "^0.1.0"
     define-property "^0.2.5"
     kind-of "^3.0.3"
+
+object-keys@^1.0.8:
+  version "1.0.11"
+  resolved "http://registry.npm.taobao.org/object-keys/download/object-keys-1.0.11.tgz#c54601778ad560f1142ce0e01bcca8b56d13426d"
 
 object-visit@^1.0.0:
   version "1.0.1"
@@ -2942,6 +3005,10 @@ sntp@2.x.x:
   resolved "http://registry.npm.taobao.org/sntp/download/sntp-2.1.0.tgz#2c6cec14fedc2222739caf9b5c3d85d1cc5a2cc8"
   dependencies:
     hoek "4.x.x"
+
+sorted-array-functions@^1.0.0:
+  version "1.2.0"
+  resolved "http://registry.npm.taobao.org/sorted-array-functions/download/sorted-array-functions-1.2.0.tgz#43265b21d6e985b7df31621b1c11cc68d8efc7c3"
 
 source-map-resolve@^0.5.0:
   version "0.5.1"
