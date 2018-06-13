@@ -16,7 +16,7 @@ export default function (router) {
     const body = req.body;
     let isEnd = false;
     plugins.every((plugin) => {
-      return plugin.go(req.body, res, plugins);
+      return plugin.go(req.body, plugins);
     });
     res.json({});
   }));
@@ -32,12 +32,12 @@ export default function (router) {
         try {
           p = require(path);
           if (p.name && (p.weight || p.weight === 0)) {
-            logger.info(`插件: '${p.name}' 加载成功, 权重: ${p.weight}`)
+            logger.info(`插件'${p.name}'加载成功, 权重: ${p.weight}`)
           } else {
             throw new Error(`插件加载失败,缺少必要属性\n位于: ${path}`);
           }
         } catch (e) {
-          logger.warn(e);
+          logger.warning(e);
         } finally {
           return p;
         }
