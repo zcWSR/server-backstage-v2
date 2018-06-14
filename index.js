@@ -11,6 +11,7 @@ import JsonReturn from './utils/return-json';
 
 const logger = new Log('app');
 const app = express();
+const env = process.env.ENV;
 
 const COOKIE_SECRET = 'zcwsr';
 app.use(bodyParser.json());
@@ -27,7 +28,7 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 10 },
   rolling: true
 }));
-if (process.env.ENV === 'dev') {
+if (env === 'dev') {
   setRoutes(app);
 } else {
   setRoutes(app, 'api');
@@ -51,12 +52,11 @@ if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
   logger.alert(`did not find port settings, use default port ${port}`);
 }
 let server = app.listen(port);
-logger.info(`server in ${process.env.ENV || 'prod'} mode`);
-logger.info(`all routes mounted under '/${process.env.ENV === 'dev' ? '' : 'api'}'`);
+logger.info(`server in ${env || 'prod'} mode`);
+logger.info(`all routes mounted under '/${env === 'dev' || env === 'develop' ? '' : 'api'}'`);
 logger.alert(`ご注意ください`);
 
-server.on('error', (err) => {
-  logger.error(err.message);
+server.on('error', (error) => {
   // if (err.syscall !== 'listen') {
   //   if (err.syscall === 'read') {
   //     console.error(error.message);
@@ -64,18 +64,18 @@ server.on('error', (err) => {
   //   throw error;
   // }
 
-  // switch (error.code) {
-  //   case 'EACCES': 
-  //     console.error(`${bind} requires elevated privileges`);
-  //     process.exit(1);
-  //     break;
-  //   case 'EADDRINUSE': 
-  //     console.error(`${bind} is already in use`);
-  //     process.exit(1);
-  //     break;
-  //   default: 
-  //     throw error;
-  // }
+  switch (error.code) {
+    case 'EACCES': 
+      console.error(`${bind} requires elevated privileges`);
+      process.exit(1);
+      break;
+    case 'EADDRINUSE': 
+      console.error(`${bind} is already in use`);
+      process.exit(1);
+      break;
+    // default: 
+    //   logger.error(error.message);
+  }
 });
 
 process.on('uncaughtException', (err) => {

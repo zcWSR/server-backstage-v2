@@ -7,17 +7,18 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "init",
+            "name": "www",
             "program": "${workspaceFolder}/test/index.js"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "www",
+            "name": "qqbot",
             "program": "${workspaceFolder}/www.js",
-            "env": {
-                "ENV": "develop"
-            },
+            "args": [
+                "-p",
+                "8888"
+            ],
             "console": "integratedTerminal"
         }
     ]
