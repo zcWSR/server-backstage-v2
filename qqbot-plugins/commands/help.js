@@ -1,5 +1,5 @@
 import * as BotService from '../../service/botService';
-import * as CR from '../command-runner';
+import * as CR from '../command-runner.message';
 
 
 export const name = 'help';

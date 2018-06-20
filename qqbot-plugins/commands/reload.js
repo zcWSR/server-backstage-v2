@@ -1,4 +1,4 @@
-import * as CR from '../command-runner';
+import * as CR from '../command-runner.message';
 import * as BotService from '../../service/botService';
 
 export const name = 'reload';

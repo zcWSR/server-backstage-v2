@@ -6,7 +6,7 @@ export const info = '群聊中随机触发复读, 每个群聊可设置不同随
 
 export const defaultRate = 0.01;
 export const readAgainRateMap = {};
-export function go(body, res) {
+export function go(body) {
   const { content, group_id } = body;
   const groupRate = readAgainRateMap[group_id];
   const randomRate = Math.random();
