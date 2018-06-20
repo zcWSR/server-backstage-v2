@@ -5,9 +5,9 @@ export function sayAgain(id, content, timeout = 3000) {
     sendGroup(id, content);
   }, timeout);
 }
-export function sendGroup(id, content) {
-  axios.get('http://localhost:5000/openqq/send_group_message', {
-    params: { id, content }
+export function sendGroup(group_id, message) {
+  axios.post('http://localhost:5000/send_group_message', {
+    data: { group_id, message }
   });
 }
 
@@ -16,29 +16,23 @@ export async function isSenderOwner(group_id, sender_id) {
 }
 
 export async function isSenderAdmin(group_id, sender_id) {
-  return await getSenderRole(group_id, sender_id) === 'attend';
+  return await getSenderRole(group_id, sender_id) === 'admin';
 }
 
 export async function isSenderOwnerOrAdmin(group_id, sender_id) {
   const role = await getSenderRole(group_id, sender_id);
-  return role === 'attend' || role === 'owner';
+  return role === 'admin' || role === 'owner';
 }
 
 async function getSenderRole(group_id, sender_id) {
   try {
     // await axios.get('http://localhost:5000/openqq/get_group_info');
-    const meta = await axios.get('http://localhost:5000/openqq/search_group', {
-      params: { id: group_id }
+    const meta = await axios.post('http://localhost:5000/get_group_member_info', {
+      data: { group_id, sender_id }
     });
-    let groupInfo = meta.data;
-    if (!groupInfo.length) return null;
-    groupInfo = groupInfo[0];
-    const sender = groupInfo.member
-    .find(member => {
-      return member.id === sender_id;
-    });
-    if (!sender) return null;
-    return sender.role;
+    let memberInfo = meta.data;
+    if (!memberInfo.user_id) return null;
+    return memberInfo.role;
   } catch (e) {
     console.log(e);
     return null;
