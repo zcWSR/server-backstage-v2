@@ -21,6 +21,16 @@ export default function (router) {
     res.json({});
   }));
 
+  router.get('/qrcode', (req, res) => {
+    fs.readFile('/tmp/mojo_webqq_qrcode_3486955134.png', (err, buffer) => {
+      if (err) res.json({ error: `get qrcode err: \n${err}` });
+      else {
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(buffer, 'binay');
+      }
+    });
+  });
+
   function loadPlugins() {
     logger.info('================qqbot-plugin================')
     const pluginsPath = path.resolve(__dirname, '../../qqbot-plugins');

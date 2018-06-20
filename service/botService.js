@@ -24,7 +24,7 @@ export async function isSenderOwnerOrAdmin(group_id, sender_id) {
   return role === 'admin' || role === 'owner';
 }
 
-async function getSenderRole(group_id, sender_id) {
+export async function getSenderRole(group_id, sender_id) {
   try {
     // await axios.get('http://localhost:5000/openqq/get_group_info');
     const meta = await axios.post('http://localhost:5000/get_group_member_info', {

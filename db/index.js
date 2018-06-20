@@ -206,6 +206,14 @@ export async function createImageTable() {
 //   });
 // }
 
+// export async function createQQBotTable() {
+//   if (await db.schema.hasTable('qq_bot')) return;
+//   return db.schema.createTable('qq_bot', table => {
+//     table.integer('group_id').primary();
+//     table.text('config');
+//   });
+// }
+
 export async function createAllTables() {
   return await Promise.all([
     createPostTable(),
