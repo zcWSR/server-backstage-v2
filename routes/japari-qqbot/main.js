@@ -27,7 +27,7 @@ export default function (router) {
     const plugins = pluginMap[body.post_type];
     if (plugins) {
       plugins.every(plugin => {
-        plugin.go(body, plugins);
+        return plugin.go(body, plugins);
       });
     }    
     res.status(204);

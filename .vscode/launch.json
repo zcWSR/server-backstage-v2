@@ -30,7 +30,7 @@
             "protocol": "inspector",
             "name": "remote",
             "address": "zcwsr.com",
-            "port": "9229"
+            "port": "5858"
         }
     ]
 }

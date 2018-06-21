@@ -10,8 +10,8 @@ export const info = '相应多种指令, 具体指令集见 commands/目录';
 
 export const commandMap = loadCommands();
 export function go (body, plugins) {
-  const { content } = body;
-  const c = isCommand(content);
+  const { message } = body;
+  const c = isCommand(message);
   if (!c) return true;
   const command = commandMap[c.name];
   if (command) {
