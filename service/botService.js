@@ -72,7 +72,8 @@ export async function getSenderRole(group_id, user_id) {
       'http://localhost:5000/get_group_member_info',
       { group_id, user_id }
     );
-    let memberInfo = meta.data;
+    let memberInfo = meta.data.data;
+    if (!memberInfo) return null;
     if (!memberInfo.user_id) return null;
     return memberInfo.role;
   } catch (e) {
