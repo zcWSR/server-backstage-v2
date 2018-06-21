@@ -65,11 +65,11 @@ server.on('error', (error) => {
 
   switch (error.code) {
     case 'EACCES': 
-      console.error(`${bind} requires elevated privileges`);
+      console.error(`${port} requires elevated privileges`);
       process.exit(1);
       break;
     case 'EADDRINUSE': 
-      console.error(`${bind} is already in use`);
+      console.error(`${port} is already in use`);
       process.exit(1);
       break;
     // default: 
