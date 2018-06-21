@@ -3,7 +3,18 @@ import CatchAsyncError from '../../utils/catchAsyncError';
 import path from 'path';
 import fs from 'fs';
 import logger from '../../utils/logger';
+import { createQQBotTable } from '../../qqbot-plugins/db'
+import * as BotService from '../../service/botService';
 
+export let groupConfigMap = {};
+createQQBotTable().then(() => {
+  return BotService.loadGroupConfig();
+}).then(config => {
+  logger.info('群插件配置加载成功');
+  groupConfigMap = config;
+}).catch(e => {
+  logger.error(e);
+});
 
 /**
  * 

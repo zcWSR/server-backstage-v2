@@ -18,17 +18,19 @@ export function exec(params, body) {
 
 function showOne(name) {
   const cm = CR.commandMap[name];
-  if (cm) {
-    return `指令名: ${name}\n描述: ${CR.commandMap[name].info || '无描述'}`;
+  if (cm && !cm.hide) {
+    return `指令名: ${name}\n描述: ${cm.info || '无描述'}`;
   } else {
-    return `指令'${name}'不存在`;
+    return `指令'${name}'不存在或被隐藏`;
   }
 }
 
 function showAll() {
-  let content = '';
+  let content = '指令帮助:\n';
   Object.keys(CR.commandMap).forEach((name, index, array) => {
-    content += `指令名: ${name}\n描述: ${CR.commandMap[name].info || '无描述'}`;
+    const cm = CR.commandMap[name];
+    if (cm.hide) return;
+    content += `指令名: ${name}\n描述: ${cm.info || '无描述'}`;
     if (index !== array.length - 1) {
       content += '\n------\n';
     }

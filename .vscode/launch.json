@@ -19,6 +19,9 @@
                 "-p",
                 "8888"
             ],
+            "env": {
+                "ENV": "dev"
+            },
             "console": "integratedTerminal"
         }
     ]
