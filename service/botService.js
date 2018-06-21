@@ -28,18 +28,14 @@ export async function saveGroupConfig(group_id, config) {
   const configBefore = await db('qqbot')
     .first('group_id')
     .where('group_id', group_id);
-  logger.debug(
-    group_id,
-    '群插件配置before:',
-    JSON.stringify(configBefore, null, 2)
-  );
+  configString = JSON.stringify(config);
   if (configBefore) {
     await db('qqbot')
-      .update('config', config)
+      .update('config', configString)
       .where('group_id', group_id);
   } else {
     logger.debug(group_id, '群插件配置不存在, 创建之');
-    await db('qqbot').insert({ [group_id]: config });
+    await db('qqbot').insert({ group_id: group_id, config: configString });
   }
 }
 
