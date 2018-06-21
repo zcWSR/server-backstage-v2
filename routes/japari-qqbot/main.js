@@ -24,6 +24,7 @@ export default function (router) {
   const pluginMap = loadPlugins();
   router.post('/', CatchAsyncError(async (req, res) => {
     const body = req.body;
+    console.log(JSON.stringify(body, null, 2));
     const plugins = pluginMap[body.post_type];
     if (plugins) {
       plugins.every(plugin => {
