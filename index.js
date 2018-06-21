@@ -74,11 +74,11 @@ function initServer() {
   
     switch (error.code) {
       case 'EACCES': 
-        console.error(`port ${port} requires elevated privileges`);
+        logger.error(`port ${port} requires elevated privileges`);
         process.exit(1);
         break;
       case 'EADDRINUSE': 
-        console.error(`port ${port} is already in use`);
+        logger.error(`port ${port} is already in use`);
         process.exit(1);
         break;
       // default: 
