@@ -28,7 +28,7 @@ export async function saveGroupConfig(group_id, config) {
   const configBefore = await db('qqbot')
     .first('group_id')
     .where('group_id', group_id);
-  configString = JSON.stringify(config);
+  const configString = JSON.stringify(config);
   if (configBefore) {
     await db('qqbot')
       .update('config', configString)
