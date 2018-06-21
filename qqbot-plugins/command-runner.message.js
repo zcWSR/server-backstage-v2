@@ -1,9 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import logger from '../utils/logger';
 import * as BotService from '../service/botService';
 
-const Log = require('log');
-const logger = new Log('command-runner');
 
 export const name = '指令解析';
 export const weight = 99;

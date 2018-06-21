@@ -5,10 +5,8 @@ import * as AdminService from '../../service/adminService';
 import loginCheck from '../../middleware/loginCheckMiddleware';
 import ReturnJson from '../../utils/return-json';
 import CatchAsyncError from '../../utils/catchAsyncError';
+import logger from '../../utils/logger';
 
-const Log = require('log');
-
-const logger = new Log('route: /blog/admin')
 
 /**
  * 

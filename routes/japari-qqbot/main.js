@@ -2,9 +2,8 @@ import { Router } from 'express';
 import CatchAsyncError from '../../utils/catchAsyncError';
 import path from 'path';
 import fs from 'fs';
-const Log = require('log');
+import logger from '../../utils/logger';
 
-const logger = new Log('japari-qqbot');
 
 /**
  * 

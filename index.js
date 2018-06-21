@@ -3,13 +3,12 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import RedisStore from 'connect-redis';
-const Log = require('log');
+import logger from './utils/logger';
 
 import { setRoutes } from './utils/route';
 import { createAllTables } from './db';
 import JsonReturn from './utils/return-json';
 
-const logger = new Log('app');
 const app = express();
 const env = process.env.ENV;
 
@@ -49,12 +48,12 @@ let port = 2333;
 if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
     port = args[3];
 } else {
-  logger.alert(`did not find port settings, use default port ${port}`);
+  logger.warn(`did not find port settings, use default port ${port}`);
 }
 let server = app.listen(port);
 logger.info(`server in ${env || 'prod'} mode`);
 logger.info(`all routes mounted under '/${env === 'dev' || env === 'develop' ? '' : 'api'}'`);
-logger.alert(`ご注意ください`);
+logger.warn(`ご注意ください`);
 
 server.on('error', (error) => {
   // if (err.syscall !== 'listen') {

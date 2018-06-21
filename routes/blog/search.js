@@ -1,12 +1,11 @@
 import { Router } from 'express';
-const Log = require('log');
+import logger from '../../utils/logger';
 
 import * as PostService from '../../service/postService';
 import CatchAsyncError from '../../utils/catchAsyncError';
 import ReturnJson from '../../utils/return-json';
 
 
-const logger = new Log('route: /blog/search');
 
 /**
  * 
