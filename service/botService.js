@@ -39,6 +39,7 @@ export function sayAgain(group_id, content, timeout = 2000) {
   }, timeout);
 }
 export function sendGroup(group_id, message) {
+  console.log('send group');
   axios.post('http://localhost:5000/send_group_message', {
     data: { group_id, message }
   });
