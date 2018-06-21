@@ -2415,10 +2415,6 @@ log4js@^2.9.0:
     redis "^2.7.1"
     slack-node "~0.2.0"
 
-log@^1.4.0:
-  version "1.4.0"
-  resolved "http://registry.npm.taobao.org/log/download/log-1.4.0.tgz#4ba1d890fde249b031dca03bc37eaaf325656f1c"
-
 loggly@^1.1.0:
   version "1.1.1"
   resolved "http://registry.npm.taobao.org/loggly/download/loggly-1.1.1.tgz#0a0fc1d3fa3a5ec44fdc7b897beba2a4695cebee"

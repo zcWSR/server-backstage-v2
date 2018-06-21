@@ -57,12 +57,12 @@ function initServer() {
   if (args.length > 2 && (args[2] === '-p' || args[2] === '--port')) {
       port = args[3];
   } else {
-    logger.alert(`did not find port settings, use default port ${port}`);
+    logger.warn(`did not find port settings, use default port ${port}`);
   }
   let server = app.listen(port);
-  logger.info(`server in ${env || 'prod'} mode`);
-  logger.info(`all routes mounted under '/${env === 'dev' || env === 'develop' ? '' : 'api'}'`);
-  logger.alert(`ご注意ください`);
+  logger.warn(`server in ${env || 'prod'} mode`);
+  logger.warn(`all routes mounted under '/${env === 'dev' || env === 'develop' ? '' : 'api'}'`);
+  logger.warn(`ご注意ください`);
   
   server.on('error', (error) => {
     // if (err.syscall !== 'listen') {
