@@ -49,7 +49,7 @@ export function sayAgain(group_id, content, timeout = 2000) {
   }, timeout);
 }
 export function sendGroup(group_id, message) {
-  axios.post('http://localhost:5000/send_group_message', { group_id, message });
+  axios.post('http://localhost:5000/send_group_msg', { group_id, message });
 }
 
 export async function isSenderOwner(group_id, user_id) {
