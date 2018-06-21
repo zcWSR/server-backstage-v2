@@ -3,12 +3,11 @@ import path from 'path';
 import requireAll from 'require-all';
 import { Router } from 'express';
 import express from 'express';
-const Log = require('log');
+import logger from '../utils/logger';
 
 import { db } from '../db';
 
 
-const logger = new Log('route');
 /**
  * 自动扫描routes下的文件夹,并按文件夹对路由模块进行挂载
  * @param {express} app express对象

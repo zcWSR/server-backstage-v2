@@ -1,11 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import knex from 'knex';
-const Log = require('log');
-// import bookshelf from 'bookshelf'
+import logger from '../utils/logger';
 
-const logger = new Log('db');
-// const projectDir = path.resolve(__dirname, '../');
 const dbFilePath = path.resolve(__dirname, 'db.sqlite');
 export const db = knex({
   client: 'sqlite3',

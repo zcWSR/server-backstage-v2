@@ -1,5 +1,6 @@
 import { Router } from 'express';
-const Log = require('log');
+import logger from '../../utils/logger';
+
 
 import loginCheck from '../../middleware/loginCheckMiddleware';
 import * as PostService from '../../service/postService';
@@ -8,7 +9,6 @@ import CatchAsyncError from '../../utils/catchAsyncError';
 import * as ArticleService from '../../service/articleService';
 
 
-const logger = new Log('route: /blog/posts');
 /**
  * 
  * @param {Router} router 

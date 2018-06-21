@@ -1,9 +1,8 @@
-const Log = require('log');
+import logger from '../utils/logger';
 
 import { db } from '../db';
 import moment from 'moment';
 
-const logger = new Log('ArticleService');
 
 /**
  * 通过id查询小文章

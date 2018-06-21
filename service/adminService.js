@@ -1,11 +1,9 @@
-const Log = require('log');
-
+import logger from '../utils/logger';
 import crypto from 'crypto';
 import { db } from '../db';
 import toSmallCamel from '../utils/toSmallCamel';
 import moment from 'moment';
 
-const logger = new Log('AdminService');
 
 /**
  * 获取博客配置信息

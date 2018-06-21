@@ -1,10 +1,9 @@
 import uuid from 'uuid/v1';
-const Log = require('log');
+import logger from '../utils/logger';
 
 import { db } from '../db';
 import { queryOne } from './imageService';
 
-const logger = new Log('postService');
 
 /**
  * 插入一条, 后端自动批量插入专用

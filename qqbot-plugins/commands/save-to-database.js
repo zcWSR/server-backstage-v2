@@ -1,8 +1,18 @@
 import * as BotService from '../../service/botService';
+import logger from '../../utils/logger';
 
 export const name = 'save';
-export const info = `保存配置到数据库, '!save'来调用`;
+export const hide = true;
 
-export function exec(params, body) {
-  BotService.sendGroup(body.group_id, '别调了, 还没写完');
+export async function exec(params, body) {
+  const { group_id } = body;
+  let content = '';
+  try {
+    await BotService.saveGroupConfig(group_id);
+    content = '配置保存成功';
+  } catch (e) {
+    logger.error(e);
+    content = '配置保存失败, 请查看日志';
+  }
+  BotService.sendGroup(body.group_id, content);
 }

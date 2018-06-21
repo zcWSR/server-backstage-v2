@@ -3,13 +3,11 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import RedisStore from 'connect-redis';
-const Log = require('log');
+import logger from './utils/logger';
 
 import { setRoutes } from './utils/route';
 import { createAllTables } from './db';
 import JsonReturn from './utils/return-json';
-
-const logger = new Log('app');
 
 createAllTables().then(() => {
   initServer();
@@ -76,11 +74,11 @@ function initServer() {
   
     switch (error.code) {
       case 'EACCES': 
-        console.error(`${bind} requires elevated privileges`);
+        console.error(`port ${port} requires elevated privileges`);
         process.exit(1);
         break;
       case 'EADDRINUSE': 
-        console.error(`${bind} is already in use`);
+        console.error(`port ${port} is already in use`);
         process.exit(1);
         break;
       // default: 

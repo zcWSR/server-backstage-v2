@@ -19,7 +19,18 @@
                 "-p",
                 "8888"
             ],
+            "env": {
+                "ENV": "dev"
+            },
             "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "protocol": "inspector",
+            "name": "remote",
+            "address": "zcwsr.com",
+            "port": "9229"
         }
     ]
 }

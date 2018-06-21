@@ -1,5 +1,5 @@
 node_modules
-db.sqlite
+*.sqlite
 
 src/img/*
 yarn.lock

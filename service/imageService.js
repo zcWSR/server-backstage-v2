@@ -1,12 +1,11 @@
-const Log = require('log');
+import logger from '../utils/logger';
+import * as qiniu from 'qiniu';
 
 import { db } from '../db';
-import * as qiniu from 'qiniu';
 import { ACCESS_KEY, SECRET_KEY, IMAGE_HOST } from './qiniu.config';
 import toSmallCamel from '../utils/toSmallCamel';
 
 
-const logger = new Log('imageService');
 const mac = new qiniu.auth.digest.Mac(ACCESS_KEY, SECRET_KEY);
 const putPolicy = new qiniu.rs.PutPolicy({
   scope: 'blog',
