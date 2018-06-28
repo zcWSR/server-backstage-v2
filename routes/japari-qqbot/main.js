@@ -22,6 +22,11 @@ createQQBotTable().then(() => {
  */
 export default function (router) {
   const pluginMap = loadPlugins();
+
+  router.get('/', CatchAsyncError(async (req, res) => {
+    res.send(`<h1>a simple command based OSU! game info searching qq-bot</h1><h2>get more info on my <a href="">github</a></h2>`);
+  }));
+
   router.post('/', CatchAsyncError(async (req, res) => {
     const body = req.body;
     const plugins = pluginMap[body.post_type];
