@@ -24,7 +24,9 @@ export default function (router) {
   const pluginMap = loadPlugins();
 
   router.get('/', CatchAsyncError(async (req, res) => {
-    res.send(`<h1>a simple command based OSU! game info searching qq-bot</h1><h2>get more info on my <a href="">github</a></h2>`);
+    let message = '<h1>a simple command based OSU! game info searching qq-bot</h1>';
+    message += '<h2>get more info on my <a href="https://github.com/zcWSR/server-backstage-v2/tree/master/routes/japari-qqbot">github</a></h2>';
+    res.send(message);
   }));
 
   router.post('/', CatchAsyncError(async (req, res) => {
