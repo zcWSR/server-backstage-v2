@@ -4,6 +4,7 @@ import { db } from '../qqbot-plugins/db';
 import * as BotService from './botService';
 import { APP_KEY } from './osu.config';
 import logger from '../utils/logger';
+import toSmallCamel from '../utils/toSmallCamel';
 
 const GET_USER_URL = 'https://osu.ppy.sh/api/get_user';
 const GET_BP_URL = 'https://osu.ppy.sh/api/get_user_best';
@@ -17,7 +18,7 @@ const modeMap = {
 };
 
 export async function bindOSUId(group_id, user_id, osuName, mode = 0) {
-  const isBind = getBindedInfo();
+  const isBind = await getBindedInfo(group_id, user_id);
   const user = await getUserByName(osuName, mode);
   if (!user) {
     BotService.sendGroup(group_id, `查找玩家'${osuName}'失败, 请重试`);
@@ -29,7 +30,7 @@ export async function bindOSUId(group_id, user_id, osuName, mode = 0) {
       osu_id: user.user_id,
       mode
     }).where({ group_id, user_id });
-    message = `更新账号绑定为'${osuName}, 模式: ${modeMap[mode]}`;
+    message = `更新账号绑定为'${osuName}', 模式: ${modeMap[mode]}`;
   } else {
     await db('osu_bind').insert({ user_id, group_id, osu_id: user.user_id, mode });
     message = `账号'${osuName}'绑定成功, 模式: ${modeMap[mode]}`;
@@ -38,7 +39,7 @@ export async function bindOSUId(group_id, user_id, osuName, mode = 0) {
 }
 
 export async function unBindOSUId(group_id, user_id) {
-  const isBind = await getBindedInfo();
+  const isBind = await getBindedInfo(group_id, user_id);
   if (!isBind) {
     BotService.sendGroup(group_id, '未绑定任何账号, 无法解除绑定');
     return;
@@ -48,7 +49,11 @@ export async function unBindOSUId(group_id, user_id) {
 }
 
 export async function getBindedInfo(group_id, user_id) {
-  return await db('osu_bind').where({ group_id, user_id }).first();
+  const meta = await db('osu_bind').where({ group_id, user_id }).first();
+  if (meta) {
+    return toSmallCamel(meta, '_');
+  }
+  return meta;
 }
 
 async function getUserByName(osuName, mode = 0) {
@@ -72,16 +77,18 @@ export async function getBP(osuId, mode, index) {
     limit: index || 1
   });
   if (!bps || !bps.length) {
-    logger.warn(`获取bp信息失败, ${!bp ? '请求出错' : '不存在bp数据'}`);
-    return null;
+    const message = `获取bp信息失败, ${!bps ? '请求出错' : '不存在bp数据'}, 请重试`
+    logger.warn(message);
+    return message;
   };
   let bp = bps.reverse()[0];
   const mapsInfo = await fetch(GET_MAP_URL, {
     b: bp.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    logger.warn(`获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}`)
-    return null;
+    const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    logger.warn(message)
+    return message;
   }
   let mapInfo = mapsInfo[0];
   return { bp, mapInfo };
@@ -95,16 +102,18 @@ export async function getRecent(osuId, mode, index) {
     limit: index || 1
   });
   if (!recents || !recents.length) {
-    logger.warn(`获取recent信息失败, ${!recents ? '请求出错' : '不存在recent数据'}`);
-    return null;
+    const message = `获取recent信息失败, ${!recents ? '请求出错' : '不存在recent数据'}, 请重试`
+    logger.warn(message);
+    return message;
   }
   let recent = recents.reverse()[0];
   const mapsInfo = await fetch(GET_MAP_URL, {
     b: recent.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    logger.warn(`获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}`)
-    return null;
+    const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    logger.warn(message)
+    return message;
   }
   let mapInfo = mapsInfo[0];
   return { recent, mapInfo };
@@ -122,7 +131,7 @@ async function fetch(url, params) {
         }, params),
         timeout: Math.pow(2, retryTimes + 1) * 1000,
       });
-      continue;
+      retryTimes = 10;
     } catch (e) {
       retryTimes++;
       logger.error(`出现异常:\n${e}\n正在进行第${retryTimes}次重试`);

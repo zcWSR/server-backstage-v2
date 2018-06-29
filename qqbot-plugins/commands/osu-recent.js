@@ -1,5 +1,6 @@
 import * as OSUService from '../../service/osuService';
 import * as BotService from '../../service/botService';
+import logger from '../../utils/logger';
 
 export const name = 'recent';
 export const info = `查看所绑定账号的最近一次游玩记录, '!recent 最近的第几次'来调用, 第几次不传默认为最近一次, 如: '!recent 2' 或 '!recent'`;
@@ -14,9 +15,9 @@ export async function exec(params, body) {
     return;
   }
   const { osuId, mode } = bindUserInfo;
-  const info = OSUService.getRecent(osuId, mode, index);
-  if (!info) {
-    BotService.sendGroup(group_id, '获取recent信息失败, 请重试');
+  const info = await OSUService.getRecent(osuId, mode, index);
+  if (typeof info === 'string') {
+    BotService.sendGroup(group_id, info);
     return;
   }
   BotService.sendGroup(group_id, JSON.stringify(info, null, 2));

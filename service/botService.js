@@ -2,6 +2,9 @@ import axios from 'axios';
 import { db } from '../qqbot-plugins/db';
 import logger from '../utils/logger';
 
+const HOST = 'http://zcwsr.com:5000';
+// const HOST = 'http://127.0.0.1:5000';
+
 export async function loadGroupConfig() {
   const rows = await db('qqbot').select('*');
   const result = rows.reduce((prev, curr) => {
@@ -45,7 +48,7 @@ export function sayAgain(group_id, content, timeout = 2000) {
   }, timeout);
 }
 export function sendGroup(group_id, message) {
-  axios.post('http://localhost:5000/send_group_msg', { group_id, message });
+  axios.post(`${HOST}/send_group_msg`, { group_id, message });
 }
 
 export async function isSenderOwner(group_id, user_id) {
@@ -65,7 +68,7 @@ export async function getSenderRole(group_id, user_id) {
   try {
     // await axios.get('http://localhost:5000/openqq/get_group_info');
     const meta = await axios.post(
-      'http://localhost:5000/get_group_member_info',
+      `${HOST}/get_group_member_info`,
       { group_id, user_id }
     );
     let memberInfo = meta.data.data;
