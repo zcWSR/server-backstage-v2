@@ -3,7 +3,7 @@ import * as BotService from '../../service/botService';
 import logger from '../../utils/logger';
 
 export const name = 'bind';
-export const info = `绑定osu!账号和mode, 使用'!bind 你的id,mode'来调用, mode不写默认为osu!模式`;
+export const info = `绑定osu!账号和mode, 使用'!bind 你的id,mode'来调用\n(0 = osu!, 1 = Taiko, 2 = CtB, 3 = osu!mania), mode不写默认为osu!模式`;
 
 export async function exec(params, body) {
   const { group_id, user_id } = body;

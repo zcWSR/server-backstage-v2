@@ -39,10 +39,23 @@ async function createOSUBindTable() {
   });
 }
 
+async function createOSUMapTable() {
+  if (await db.schema.hasTable('osu_map')) return;
+  return await db.schema.createTable('osu_map', table => {
+    table.integer('id');
+    table.text('map');
+  }).then(() => {
+    logger.info(`table 'osu_map' 準備完了`);
+  }).catch(err => {
+    logger.err(err);
+  });
+}
+
 export async function createAllTable() {
   return await Promise.all([
     createQQBotTable(),
-    createOSUBindTable()
+    createOSUBindTable(),
+    createOSUMapTable()
   ]).then(() => {
     logger.info('全ての plugin tables 準備完了');
   }).catch(err => {

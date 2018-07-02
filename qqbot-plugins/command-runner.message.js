@@ -21,7 +21,6 @@ export function go (body, plugins) {
   }
   return false;
 }
-
 /**
  * 判断是否为指令调用内容, 返回指令和参数
  * @param {string} content 完整内容

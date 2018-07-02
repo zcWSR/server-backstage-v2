@@ -23,3 +23,7 @@ export async function exec(params, body) {
   BotService.sendGroup(group_id, JSON.stringify(info, null, 2));
   return;
 }
+
+function convertInfo(info) {
+  const { }
+}
