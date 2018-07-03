@@ -57,7 +57,7 @@ export function toBin(intNum) {
   }
 }
 
-function numberToOsuModes(num) {
+export function numberToOsuModes(num) {
   const modes = [];
   const bins = toBin(num).split('').reverse();
   bins.forEach((bin, index) => {
@@ -66,27 +66,20 @@ function numberToOsuModes(num) {
       modes.push(mode);
     }
   });
-  if (modes.indexOf(mode => mode === 'NC') < 0) {
+  if (modes.indexOf(mode => mode === 'NC') >= 0) {
     const index = modes.indexOf(mode => mode === 'TD');
     modes.splice(index, 1);
   }
-  if (modes.indexOf(mode => mode === 'PF') < 0) {
+  if (modes.indexOf(mode => mode === 'PF') >= 0) {
     const index = modes.indexOf(mode => mode === 'SD');
     modes.splice(index, 1);
   }
-  return modes.sort();
+  if (modes.length) {
+    return modes.sort();
+  }
+  return ['None']
 }
 
-function numberToStar() {
+export function numberToStar() {
   
-}
-
-function getOsuFile() {
-  
-}
-
-
-export default {
-  numberToOsuModes,
-  numberToStar
 }

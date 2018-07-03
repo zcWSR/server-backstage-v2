@@ -16,4 +16,5 @@ export async function exec(params, body) {
   let osuName = params[0];
   let mode = params[1] ? parseInt(params[1]) || 0 : 0;
   await OSUService.bindOSUId(group_id, user_id, osuName, mode);
+  return;
 }

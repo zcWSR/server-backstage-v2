@@ -14,12 +14,10 @@ export async function exec(params, body) {
     BotService.sendGroup(group_id, `您未绑定osu!账号, 使用'!bind'进行账号绑定`);
     return;
   }
-  const { osuId, mode } = bindUserInfo;
-  const info = await OSUService.getRecent(osuId, mode, index);
+  const info = await OSUService.getRecent(bindUserInfo, index);
   if (typeof info === 'string') {
     BotService.sendGroup(group_id, info);
     return;
   }
-  BotService.sendGroup(group_id, JSON.stringify(info, null, 2));
-  return;
+  await OSUService.sendInfo(`recent#${index}`, info, group_id);
 }

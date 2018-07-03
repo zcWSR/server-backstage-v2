@@ -11,19 +11,13 @@ export async function exec(params, body) {
   const index = parseInt(params) || 1;
   const bindUserInfo = await OSUService.getBindedInfo(group_id, user_id);
   if (!bindUserInfo) {
-    BotService.sendGroup(group_id, `您未绑定osu!账号, 使用'!bind'进行账号绑定`);
+    BotService.sendGroup(group_id, `您未绑定osu!账号, 使用'!bind xxx'进行账号绑定`);
     return;
   }
-  const { osuId, mode } = bindUserInfo;
-  const info = await OSUService.getBP(osuId, mode, index);
+  const info = await OSUService.getBP(bindUserInfo, index);
   if (typeof info === 'string') {
-    BotService.sendGroup(group_id, info);
+    BotService.sendGroup(group_id, info); 
     return;
   }
-  BotService.sendGroup(group_id, JSON.stringify(info, null, 2));
-  return;
-}
-
-function convertInfo(info) {
-  const { }
+  await OSUService.sendInfo(`bp#${index}`, info, group_id);
 }

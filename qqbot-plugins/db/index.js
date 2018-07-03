@@ -31,6 +31,7 @@ async function createOSUBindTable() {
     table.integer('user_id');
     table.integer('group_id');
     table.integer('osu_id');
+    table.string('osu_name');
     table.integer('mode');
   }).then(() => {
     logger.info(`table 'osu_bind' 準備完了`);
