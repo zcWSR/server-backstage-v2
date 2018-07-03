@@ -1,10 +1,14 @@
+import { deflateSync, unzipSync } from 'zlib';
 import axios from 'axios';
 
 import { db } from '../qqbot-plugins/db';
 import * as BotService from './botService';
 import { APP_KEY } from './osu.config';
 import logger from '../utils/logger';
+import { toBin } from '../utils/osuUtils';
 import toSmallCamel from '../utils/toSmallCamel';
+import * as osu from 'ojsama';
+
 
 const GET_USER_URL = 'https://osu.ppy.sh/api/get_user';
 const GET_BP_URL = 'https://osu.ppy.sh/api/get_user_best';
@@ -12,6 +16,7 @@ const GET_MAP_URL = 'https://osu.ppy.sh/api/get_beatmaps';
 const GET_RECENT_URL = 'https://osu.ppy.sh/api/get_user_recent';
 const GET_SCORE_URL = 'https://osu.ppy.sh/api/get_scores';
 const GET_MATCH_URL = 'https://osu.ppy.sh/api/get_match';
+const GET_OSU_FILE_UTL = 'https://osu.ppy.sh/osu';
 
 const modeMap = {
   0: 'osu!', 1: 'Taiko', 2: 'CtB', 3: 'osu!mania'
@@ -70,20 +75,20 @@ async function getUserByName(osuName, mode = 0) {
 }
 
 export async function getBP(osuId, mode, index) {
-  const bps = await fetch(GET_BP_URL, {
+  const playInfos = await fetch(GET_BP_URL, {
     u: osuId,
     m: mode,
     type: 'id',
     limit: index || 1
   });
-  if (!bps || !bps.length) {
-    const message = `获取bp信息失败, ${!bps ? '请求出错' : '不存在bp数据'}, 请重试`
+  if (!playInfos || !playInfos.length) {
+    const message = `获取bp信息失败, ${!playInfos ? '请求出错' : '不存在bp数据'}, 请重试`
     logger.warn(message);
     return message;
   };
-  let bp = bps.reverse()[0];
+  let playInfo = playInfos.reverse()[0];
   const mapsInfo = await fetch(GET_MAP_URL, {
-    b: bp.beatmap_id
+    b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
     const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
@@ -91,24 +96,24 @@ export async function getBP(osuId, mode, index) {
     return message;
   }
   let mapInfo = mapsInfo[0];
-  return { bp, mapInfo };
+  return { playInfo, mapInfo };
 }
 
 export async function getRecent(osuId, mode, index) {
-  const recents = await fetch(GET_RECENT_URL, {
+  const playInfos = await fetch(GET_RECENT_URL, {
     u: osuId,
     m: mode,
     type: 'id',
     limit: index || 1
   });
-  if (!recents || !recents.length) {
-    const message = `获取recent信息失败, ${!recents ? '请求出错' : '不存在recent数据'}, 请重试`
+  if (!playInfos || !playInfos.length) {
+    const message = `获取recent信息失败, ${!playInfos ? '请求出错' : '不存在recent数据'}, 请重试`
     logger.warn(message);
     return message;
   }
-  let recent = recents.reverse()[0];
+  let playInfo = playInfos.reverse()[0];
   const mapsInfo = await fetch(GET_MAP_URL, {
-    b: recent.beatmap_id
+    b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
     const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
@@ -116,10 +121,53 @@ export async function getRecent(osuId, mode, index) {
     return message;
   }
   let mapInfo = mapsInfo[0];
-  return { recent, mapInfo };
+  return { playInfo, mapInfo };
 }
 
-async function fetch(url, params) {
+export async function getPP(info) {
+  const { playInfo: {
+    beatmap_id,
+    enabled_mods,
+    maxcombo,
+    countmiss,
+    count50,
+    count100,
+    count300
+  }, mapInfo } = info;
+  const mapString = await getMap(beatmap_id);
+  const parser = new osu.parser();
+  parser.feed(mapString);
+  const map = parser.map;
+  const stars = new osu.diff().calc({
+    map,
+    mods: toBin(enabled_mods)
+  });
+  const pp = osu.ppv2({
+    stars,
+    combo: +maxcombo,
+    nmiss: +countmiss,
+    n50: +count50,
+    n100: +count100,
+    n300: +count300
+  });
+  return pp;
+}
+
+async function getMap(mapId) {
+  const meta = await db('osu_map').where('id', mapId).first();
+  if (meta) {
+    return unzipSync(Buffer.from(meta.map, 'base64')).toString();
+  }
+  const map = await fetch(`${GET_OSU_FILE_UTL}/${mapId}`, null, { responseType: 'text' });
+  if (!map) {
+    return null;
+  }
+  const mapZip = deflateSync(map).toString('base64');
+  await db('osu_map').insert({ id: mapId, map: mapZip });
+  return map;
+}
+
+async function fetch(url, params, config) {
   let retryTimes = 0;
   let meta;
   while(retryTimes < 5) {
@@ -130,6 +178,7 @@ async function fetch(url, params) {
           k: APP_KEY
         }, params),
         timeout: Math.pow(2, retryTimes + 1) * 1000,
+        ...config
       });
       retryTimes = 10;
     } catch (e) {

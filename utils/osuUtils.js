@@ -43,7 +43,7 @@ const startMap = {
   9: '',
 }
 
-function toBin(intNum) {
+export function toBin(intNum) {
   var answer = '';
   if (/\d+/.test(intNum)) {
     while (intNum != 0) {
