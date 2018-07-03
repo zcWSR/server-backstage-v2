@@ -255,5 +255,5 @@ export async function sendInfo(prefix, info, group_id) {
     message += `${parseFloat(info.playInfo.pp).toFixed(2)} pp (官方)\n`;
   }
   message += `${pp} pp (离线计算)`;
-  console.log(message);
+  BotService.sendGroup(group_id, message);
 }
