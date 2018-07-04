@@ -46,7 +46,7 @@ export async function getHso(hMode = false) {
     hsoList = meta;
   }
   if (!meta.length) return null;
-  const hsoImage = list[Math.floor(Math.random() * list.length)];
+  const hsoImage = meta[Math.floor(Math.random() * meta.length)];
   let hsoUrl = hsoImage.file_url;
   if(/^\/\//.test(hsoUrl)) {
     return `http:${hsoUrl}`
