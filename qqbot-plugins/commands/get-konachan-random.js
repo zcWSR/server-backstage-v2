@@ -7,7 +7,7 @@ export const name = 'hso';
 export const info = 'hso';
 
 export async function exec(params, body) {
-  params = params.trim();
+  params = (params || '').trim();
   const hsoUrl = await getHso(params === '+');
   if (hsoUrl) {
     BotService.sendGroup(body.group_id, `hso\n${hsoUrl}`);
@@ -25,8 +25,9 @@ export async function getHso(hMode = false) {
   const now = new Date().getTime();
   const time = hMode ? hsoPlusTime : hsoTime;
   const list = hMode ? hsoPlusList : hsoList;
+  let meta;
   if (now - time > 1000 * 60 * 60 || list.length === 0) {
-    const meta = (await OSUService.fetch(
+    meta = (await OSUService.fetch(
       `http://konachan.${hMode ? 'com' : 'net'}/post.json`,
       {
         limit: 100
