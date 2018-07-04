@@ -179,7 +179,7 @@ async function getMap(mapId) {
   return map;
 }
 
-async function fetch(url, params, config) {
+export async function fetch(url, params, config) {
   let retryTimes = 0;
   let meta;
   while(retryTimes < 3) {

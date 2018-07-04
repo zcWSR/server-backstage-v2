@@ -8,7 +8,15 @@ export const info = `查看所绑定账号的bp, '!bpme 第几bp'来调用, 第�
 export async function exec(params, body) {
   const { group_id, user_id } = body;
   params = params.trim();
-  const index = parseInt(params) || 1;
+  const index = parseInt(params);
+  if (!index) {
+    BotService.sendGroup(group_id, `非法参数'${params}', 使用'!help bpme'查看使用方法'`);
+    return;
+  }
+  if (index > 20 || index < 1) {
+    BotService.sendGroup(group_id, `仅支持bp查询范围#1-#20, 请重试`);
+    return;
+  }
   const bindUserInfo = await OSUService.getBindedInfo(group_id, user_id);
   if (!bindUserInfo) {
     BotService.sendGroup(group_id, `您未绑定osu!账号, 使用'!bind xxx'进行账号绑定`);

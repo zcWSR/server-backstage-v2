@@ -8,7 +8,14 @@ export const info = `查看所绑定账号的最近一次游玩记录, '!recent 
 export async function exec(params, body) {
   const { group_id, user_id } = body;
   params = params.trim();
-  const index = parseInt(params) || 1;
+  if (!index) {
+    BotService.sendGroup(group_id, `非法参数'${params}', 使用'!help recent'查看使用方法'`);
+    return;
+  }
+  if (index > 20 || index < 1) {
+    BotService.sendGroup(group_id, `仅支持recent查询范围#1-#20, 请重试`);
+    return;
+  }
   const bindUserInfo = await OSUService.getBindedInfo(group_id, user_id);
   if (!bindUserInfo) {
     BotService.sendGroup(group_id, `您未绑定osu!账号, 使用'!bind'进行账号绑定`);

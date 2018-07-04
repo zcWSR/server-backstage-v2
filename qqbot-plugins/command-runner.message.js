@@ -26,11 +26,19 @@ export function go (body, plugins) {
  * @param {string} content 完整内容
  */
 function isCommand(content) {
-  const match = content.match(/^[!|\uff01]([a-zA-Z]{2,}) ?(.*)$/);
+  let match = content.match(/^[!|\uff01]([a-zA-Z]{2,})\s(.*)$/);
+  if (match) {
+    return {
+      name: match[1],
+      params: match[2]
+    }
+  }
+  // 对无参数指令做分别处理, 防止出现!recent1 类似这样不加空格也能匹配成功的问题
+  match = content.match(/^[!|\uff01]([a-zA-Z]{2,})$/);
   if (!match) return null;
   return {
     name: match[1],
-    params: match[2]
+    params: null
   }
 }
 
