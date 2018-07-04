@@ -22,6 +22,9 @@ let hsoTime = new Date().getTime();
 let hsoPlusTime = new Date().getTime();
 
 export async function getHso(hMode = false) {
+  if (hMode) {
+    logger.info('hso plus mode');
+  }
   const now = new Date().getTime();
   const time = hMode ? hsoPlusTime : hsoTime;
   let list = hMode ? hsoPlusList : hsoList;
@@ -41,16 +44,13 @@ export async function getHso(hMode = false) {
     )) || [];
     if (hMode) {
       hsoPlusTime = new Date().getTime();
+      hsoPlusList = meta;
     } else {
       hsoTime = new Date().getTime();
+      hsoList = meta;
     }
+    list = meta;
   }
-  if (hMode) {
-    hsoPlusList = meta;
-  } else {
-    hsoList = meta;
-  }
-  list = meta;
   if (!list.length) return null;
   const hsoImage = list[Math.floor(Math.random() * list.length)];
   let hsoUrl = hsoImage.file_url;

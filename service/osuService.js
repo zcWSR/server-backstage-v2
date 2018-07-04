@@ -200,7 +200,7 @@ export async function fetch(url, params, config) {
     }
   }
   if (retryTimes === 3) {
-    logger.error(`请求: ${url} API失败5次`);
+    logger.error(`请求: ${url} API失败`);
     return null;
   }
   meta = meta.data;

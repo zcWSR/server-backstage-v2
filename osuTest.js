@@ -12,6 +12,9 @@ import { getHso } from './qqbot-plugins/commands/get-konachan-random';
 //   await sendInfo(`bp#${index}`, info);
 // })
 
-getHso(true).then((url) => {
+getHso().then((url) => {
+  console.log(url);
+  return getHso()
+}).then((url) => {
   console.log(url);
 })
