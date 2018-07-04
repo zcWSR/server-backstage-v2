@@ -7,17 +7,27 @@ export const name = 'hso';
 export const info = 'hso';
 
 export async function exec(params, body) {
-  const hsoUrl = await getHso();
-  BotService.sendGroup(body.group_id, `hso\n${hsoUrl}`);
+  params = params.trim();
+  const hsoUrl = await getHso(params === '+');
+  if (hsoUrl) {
+    BotService.sendGroup(body.group_id, `hso\n${hsoUrl}`);
+  } else {
+    BotService.sendGroup(body.group_id, `出现错误, 色不动了`);
+  }
 }
 
 let hsoList = [];
+let hsoPlusList = [];
 let hsoTime = new Date().getTime();
-export async function getHso() {
+let hsoPlusTime = new Date().getTime();
+
+export async function getHso(hMode = false) {
   const now = new Date().getTime();
-  if (now - hsoTime > 1000 * 60 * 60 || hsoList.length === 0) {
-    hsoList = (await OSUService.fetch(
-      'http://konachan.net/post.json',
+  const time = hMode ? hsoPlusTime : hsoTime;
+  const list = hMode ? hsoPlusList : hsoList;
+  if (now - time > 1000 * 60 * 60 || list.length === 0) {
+    const meta = (await OSUService.fetch(
+      `http://konachan.${hMode ? 'com' : 'net'}/post.json`,
       {
         limit: 100
       },
@@ -29,10 +39,16 @@ export async function getHso() {
       }
     )) || [];
   }
-  const hsoImage = hsoList[Math.floor(Math.random() * hsoList.length)];
+  if (hMode) {
+    hsoPlusList = meta;
+  } else {
+    hsoList = meta;
+  }
+  if (!meta.length) return null;
+  const hsoImage = list[Math.floor(Math.random() * list.length)];
   let hsoUrl = hsoImage.file_url;
   if(/^\/\//.test(hsoUrl)) {
     return `http:${hsoUrl}`
   }
-  return hsoUrl
+  return hsoUrl;
 }
