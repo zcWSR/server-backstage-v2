@@ -24,7 +24,7 @@ let hsoPlusTime = new Date().getTime();
 export async function getHso(hMode = false) {
   const now = new Date().getTime();
   const time = hMode ? hsoPlusTime : hsoTime;
-  const list = hMode ? hsoPlusList : hsoList;
+  let list = hMode ? hsoPlusList : hsoList;
   let meta;
   if (now - time > 1000 * 60 * 60 || list.length === 0) {
     meta = (await OSUService.fetch(
@@ -39,14 +39,20 @@ export async function getHso(hMode = false) {
         }
       }
     )) || [];
+    if (hMode) {
+      hsoPlusTime = new Date().getTime();
+    } else {
+      hsoTime = new Date().getTime();
+    }
   }
   if (hMode) {
     hsoPlusList = meta;
   } else {
     hsoList = meta;
   }
-  if (!meta.length) return null;
-  const hsoImage = meta[Math.floor(Math.random() * meta.length)];
+  list = meta;
+  if (!list.length) return null;
+  const hsoImage = list[Math.floor(Math.random() * list.length)];
   let hsoUrl = hsoImage.file_url;
   if(/^\/\//.test(hsoUrl)) {
     return `http:${hsoUrl}`
