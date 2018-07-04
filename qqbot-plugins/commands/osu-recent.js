@@ -8,6 +8,7 @@ export const info = `查看所绑定账号的最近一次游玩记录, '!recent 
 export async function exec(params, body) {
   const { group_id, user_id } = body;
   params = params.trim();
+  const index = parseInt(params);
   if (!index) {
     BotService.sendGroup(group_id, `非法参数'${params}', 使用'!help recent'查看使用方法'`);
     return;
