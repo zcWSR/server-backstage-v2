@@ -67,7 +67,7 @@ export function numberToOsuModes(num) {
     }
   });
   if (modes.indexOf(mode => mode === 'NC') >= 0) {
-    const index = modes.indexOf(mode => mode === 'TD');
+    const index = modes.indexOf(mode => mode === 'DT');
     modes.splice(index, 1);
   }
   if (modes.indexOf(mode => mode === 'PF') >= 0) {
