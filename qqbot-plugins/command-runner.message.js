@@ -10,12 +10,12 @@ export const info = '相应多种指令, 具体指令集见 commands/目录';
 
 export const commandMap = loadCommands();
 export function go (body, plugins) {
-  const { message } = body;
+  const { group_id, user_id, message } = body;
   const c = isCommand(message);
   if (!c) return true;
   const command = commandMap[c.name];
   if (command) {
-    logger.info(`调用指令: !${c.name}, 参数: ${c.params}`);
+    logger.info(`群${group_id}, qq${user_id}, 调用指令: !${c.name}, 参数: ${c.params}`);
     command.exec(c.params, body);
   } else {
     BotService.sendGroup(body.group_id, '你所调用的指令不存在, 尝试使用\'!help\'来查看所有可用指令');
