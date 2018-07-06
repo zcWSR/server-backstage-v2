@@ -21,12 +21,12 @@ export async function exec(params, body) {
     BotService.sendGroup(group_id, `非法参数, 请输入玩家昵称`);
     return;
   }
-  const bpIndex = parseInt(params[1] || 1) || -1;
+  const bpIndex = parseInt(params[1] || 1);
   if (bpIndex > 20 || bpIndex < 0) {
     BotService.sendGroup(group_id, `非法参数, 仅支持bp查询范围#1-#20, 请重试`);
     return;
   }
-  const mode = parseInt(params[2] || 0) || -1;
+  const mode = parseInt(params[2] || 0);
   if (mode !== 0 || mode !== 1 || mode !== 2 || mode !== 3) {
     BotService.sendGroup(group_id, `非法参数, 请不要写不存在的模式谢谢`);
     return;

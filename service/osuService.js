@@ -257,7 +257,7 @@ export async function sendInfo(prefix, info, group_id) {
     message += `${parseFloat(info.playInfo.pp).toFixed(2)} pp (官方)\n`;
   }
   message += `${pp} pp (离线计算)`;
-  logger.info(`格式化玩家'${osu_name}的${prefix}数据成功'`);
+  logger.info(`格式化玩家'${osu_name}'的${prefix}数据成功`);
   logger.info(`地图id: ${beatmapset_id}, 难度[${map.version}], ${pp} pp`);
   BotService.sendGroup(group_id, message);
 }
