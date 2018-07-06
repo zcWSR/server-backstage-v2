@@ -7,7 +7,7 @@ export const info = `查看所绑定账号的bp, '!bpme 第几bp'来调用, 第�
 
 export async function exec(params, body) {
   const { group_id, user_id } = body;
-  params = params.trim();
+  params = (params || '1').trim();
   const index = parseInt(params);
   if (!index) {
     BotService.sendGroup(group_id, `非法参数'${params}', 使用'!help bpme'查看使用方法'`);

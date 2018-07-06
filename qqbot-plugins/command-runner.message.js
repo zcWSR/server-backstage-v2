@@ -39,7 +39,7 @@ function isCommand(content) {
   if (!match) return null;
   return {
     name: match[1],
-    params: null
+    params: ''
   }
 }
 

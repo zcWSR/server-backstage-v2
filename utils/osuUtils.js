@@ -66,12 +66,12 @@ export function numberToOsuModes(num) {
       modes.push(mode);
     }
   });
-  if (modes.indexOf(mode => mode === 'NC') >= 0) {
-    const index = modes.indexOf(mode => mode === 'TD');
+  if (modes.indexOf('NC') >= 0) {
+    const index = modes.indexOf('DT');
     modes.splice(index, 1);
   }
-  if (modes.indexOf(mode => mode === 'PF') >= 0) {
-    const index = modes.indexOf(mode => mode === 'SD');
+  if (modes.indexOf('PF') >= 0) {
+    const index = modes.indexOf('SD');
     modes.splice(index, 1);
   }
   if (modes.length) {
