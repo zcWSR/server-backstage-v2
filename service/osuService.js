@@ -25,9 +25,8 @@ const modeMap = {
 export async function bindOSUId(group_id, user_id, osuName, mode = 0) {
   const isBind = await getBindedInfo(group_id, user_id);
   const user = await getUserByName(osuName, mode);
-  if (!user) {
-    BotService.sendGroup(group_id, `查找玩家'${osuName}'失败, 请重试`);
-    return;
+  if (typeof user === 'string') {
+    return user;
   }
   let message;
   if (isBind) {
@@ -41,17 +40,19 @@ export async function bindOSUId(group_id, user_id, osuName, mode = 0) {
     await db('osu_bind').insert({ user_id, group_id, osu_id: user.user_id, osu_name: osuName, mode });
     message = `账号'${osuName}'绑定成功, 模式: ${modeMap[mode]}`;
   }
-  BotService.sendGroup(group_id, message);
+  logger.info(`qq${user_id}${message}`);
+  return message;
 }
 
 export async function unBindOSUId(group_id, user_id) {
   const isBind = await getBindedInfo(group_id, user_id);
   if (!isBind) {
-    BotService.sendGroup(group_id, '未绑定任何账号, 无法解除绑定');
-    return;
+    const message = '未绑定任何账号, 无法解除绑定';
+    logger.warn(`qq${user_id}${message}`);
+    return message;
   }
   await db('osu_bind').where({ group_id, user_id }).del();
-  BotService.sendGroup(group_id, '解绑成功');
+  return '解绑成功';
 }
 
 export async function getBindedInfo(group_id, user_id) {
@@ -62,15 +63,16 @@ export async function getBindedInfo(group_id, user_id) {
   return meta;
 }
 
-async function getUserByName(osuName, mode = 0) {
+export async function getUserByName(osuName, mode = 0) {
   let users = await fetch(GET_USER_URL, {
     u: osuName,
     type: 'string',
     mode: 0
   });
   if (!users || !users.length) {
-    logger.warn(`获取用户信息失败, ${!users ? '请求出错' : '不存在用户'}`);
-    return null;
+    message = `获取'${osuName}'玩家信息失败, ${!users ? '请求出错' : '用户不存在'}`;
+    logger.warn(message);
+    return message;
   }
   return users[0];
 }
@@ -93,9 +95,9 @@ export async function getBP(userInfo, index) {
     b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
-    logger.warn(message)
-    return message;
+    const message = `信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    logger.warn(`获取beatmap${playInfo.beatmap_id}${message}`);
+    return `获取beatmap${message}`;
   }
   let mapInfo = mapsInfo[0];
   return { playInfo: { osu_name: userInfo.osuName, ...playInfo }, mapInfo };
@@ -119,9 +121,9 @@ export async function getRecent(userInfo, index) {
     b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    const message = `获取beatmap信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
-    logger.warn(message)
-    return message;
+    const message = `信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    logger.warn(`获取beatmap${playInfo.beatmap_id}${message}`)
+    return `获取beatmap${message}`;
   }
   let mapInfo = mapsInfo[0];
   return { playInfo: { osu_name: userInfo.osuName, ...playInfo }, mapInfo };
@@ -139,9 +141,9 @@ export async function getPP(info) {
   }, mapInfo } = info;
   const mapString = await getMap(beatmap_id);
   if (!mapString) {
-    const message = '获取铺面信息失败';
-    logger.warn(`${message}, 无法计算pp`);
-    return `${message}, 请重试`;
+    const message = '铺面信息失败';
+    logger.warn(`获取${beatmap_id}${message}, 无法计算pp`);
+    return `获取${message}, 请重试`;
   }
   const parser = new osu.parser();
   parser.feed(mapString);
@@ -255,5 +257,7 @@ export async function sendInfo(prefix, info, group_id) {
     message += `${parseFloat(info.playInfo.pp).toFixed(2)} pp (官方)\n`;
   }
   message += `${pp} pp (离线计算)`;
+  logger.info(`格式化玩家'${osu_name}的${prefix}数据成功'`);
+  logger.info(`地图id: ${beatmapset_id}, 难度[${map.version}], ${pp} pp`);
   BotService.sendGroup(group_id, message);
 }
