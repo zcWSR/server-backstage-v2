@@ -15,7 +15,7 @@ export function go (body, plugins) {
   if (!c) return true;
   const command = commandMap[c.name];
   if (command) {
-    logger.info(`调用指令: !${command}, 参数: ${c.params}`);
+    logger.info(`调用指令: !${c.name}, 参数: ${c.params}`);
     command.exec(c.params, body);
   } else {
     BotService.sendGroup(body.group_id, '你所调用的指令不存在, 尝试使用\'!help\'来查看所有可用指令');
