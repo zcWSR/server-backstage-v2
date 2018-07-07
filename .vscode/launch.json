@@ -16,10 +16,6 @@
             "request": "launch",
             "name": "qqbot",
             "program": "${workspaceFolder}/www.js",
-            "args": [
-                "-p",
-                "8888"
-            ],
             "env": {
                 "ENV": "dev"
             },
