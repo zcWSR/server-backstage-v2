@@ -33,7 +33,7 @@ export async function exec(params, body) {
     return;
   }
   const userInfo = await OSUService.getUserByName(osuName, mode);
-  if (typeof user === 'string') {
+  if (typeof userInfo === 'string') {
     BotService.sendGroup(group_id, user);
     return;
   }
