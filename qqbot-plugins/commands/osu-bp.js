@@ -27,8 +27,7 @@ export async function exec(params, body) {
     return;
   }
   const mode = parseInt(params[2] || 0);
-  console.log(mode);
-  if (mode !== 0 && mode !== 1 && mode !== 2 && mode !== 3) {
+  if (mode !== 0 && mode !== 2 && mode !== 1 && mode !== 3 ) {
     BotService.sendGroup(group_id, `非法参数, 请不要写不存在的模式谢谢`);
     return;
   }
@@ -38,7 +37,7 @@ export async function exec(params, body) {
     return;
   }
   const bpInfo = await OSUService.getBP({
-    osuName: userInfo.username, osuId: userInfo.user_id, mode
+    osuName: userInfo.username, osuId: +userInfo.user_id, mode
   }, bpIndex);
   if (typeof bpInfo === 'string') {
     BotService.sendGroup(group_id, bpInfo);

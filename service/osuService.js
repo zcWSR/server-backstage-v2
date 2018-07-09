@@ -78,6 +78,7 @@ export async function getUserByName(osuName, mode = 0) {
 }
 
 export async function getBP(userInfo, index) {
+  // console.log(JSON.stringify(userInfo, null, 2));
   index = index || 1;
   const playInfos = await fetch(GET_BP_URL, {
     u: userInfo.osuId,
@@ -205,8 +206,7 @@ export async function fetch(url, params, config) {
     logger.error(`请求: ${url} API失败`);
     return null;
   }
-  meta = meta.data;
-  return meta;
+  return meta.data || null;
 }
 
 /**
