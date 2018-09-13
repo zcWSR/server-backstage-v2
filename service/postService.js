@@ -168,7 +168,7 @@ export async function queryOneById(id) {
   const post = rows[0];
   post.labels = post.labels ? post.labels.split(',') : [];
   post.lock = !!post.lock;
-  post.section = `${post.section}\n`;
+  post.section = `${post.section}\n\n`;
   return post;
 }
 
