@@ -3,7 +3,7 @@ import logger from '../../utils/logger';
 import * as BotService from '../../service/botService';
 import * as OSUService from '../../service/osuService';
 
-export const name = 'hso';
+// export const name = 'hso';
 export const info = 'hso';
 
 export async function exec(params, body) {
