@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { db } from '../qqbot-plugins/db';
 import logger from '../utils/logger';
+import { BOT_SERVER } from './bot.config';
 
-const HOST = process.env.ENV === 'dev' ? 'http://zcwsr.com:5000' : 'http://127.0.0.1:5000';
+const HOST = process.env.ENV === 'dev' ? 'http://127.0.0.1:5000':  BOT_SERVER;
+
 
 export async function loadGroupConfig() {
   const rows = await db('qqbot').select('*');

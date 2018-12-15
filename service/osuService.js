@@ -70,7 +70,7 @@ export async function getUserByName(osuName, mode = 0) {
     mode: 0
   });
   if (!users || !users.length) {
-    const message = `获取'${osuName}'玩家信息失败, ${!users ? '请求出错' : '用户不存在'}`;
+    const message = `获取玩家'${osuName}'的信息失败, ${!users ? '请求出错' : '用户不存在'}`;
     logger.warn(message);
     return message;
   }
@@ -78,6 +78,7 @@ export async function getUserByName(osuName, mode = 0) {
 }
 
 export async function getBP(userInfo, index) {
+  // console.log(JSON.stringify(userInfo, null, 2));
   index = index || 1;
   const playInfos = await fetch(GET_BP_URL, {
     u: userInfo.osuId,
@@ -205,8 +206,7 @@ export async function fetch(url, params, config) {
     logger.error(`请求: ${url} API失败`);
     return null;
   }
-  meta = meta.data;
-  return meta;
+  return meta.data || null;
 }
 
 /**
