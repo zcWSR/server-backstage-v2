@@ -5,8 +5,8 @@ export const name = 'newNotice';
 export const info = `查看当前或设置当前群的入群提醒模板, '!newNotice'来查看, '!newNotice set xxx'来设置, 模板中可使用'\$\{name\}'来代替入群人昵称`;
 const defaultTpl = `欢迎 \$\{name\} 加入本群! 请使用"!help"查看可用指令~`;
 
-export function exec(params, body) {
-  const { group_id } = body;
+export async function exec(params, body) {
+  const { group_id, user_id } = body;
   params = params.trim();
   if (!params) {
     if (groupConfigMap.newMemberNotice) {
@@ -22,8 +22,7 @@ export function exec(params, body) {
     }
     return;
   }
-  let [key, value] = params.split(' ');
-  value = (value || []).join('');
+  const { key, value } = getValue(params);
   if (key !== 'set') {
     BotService.sendGroup(group_id, `非法参数'${key || 'null'}'`);
     return;
@@ -32,9 +31,26 @@ export function exec(params, body) {
     BotService.sendGroup(group_id, '不可设置空模板');
     return;
   }
+  if (!(await BotService.isSenderOwnerOrAdmin(group_id, user_id))) {
+    BotService.sendGroup(group_id, '设置失败, 仅管理员及以上拥有权限');
+    return;
+  }
   groupConfigMap[group_id] = groupConfigMap[group_id] || {};
   groupConfigMap[group_id].newMemberNotice = value;
-
   BotService.sendGroup(group_id, '设置成功!');
   return;
+}
+
+function getValue(params) {
+  const match = params.match(/^(\w+)\s(.*)/);
+  if (!match) {
+    return {
+      key: match,
+      value: null
+    }
+  }
+  return {
+    key: match[1],
+    value: match[2]
+  }
 }
