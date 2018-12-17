@@ -61,7 +61,7 @@ export default function (router) {
                 throw new Error(`插件加载失败,缺少必要属性\n位于: ${path}`);
               }
             } catch (e) {
-              logger.error(e);
+              logger.error(e.message);
             }
           });
         }

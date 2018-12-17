@@ -6,8 +6,8 @@ export const weight = 1;
 export const info = '入群提醒, 暂时不可配置';
 
 export async function go(body) {
-  const { notice_type, group_id, user_id } = body;
-  if (notice_type !== 'group_increase') return true;
+  const { event, group_id, user_id } = body;
+  if (event !== 'group_increase') return true;
   logger.info(`群${group_id}有新成员${user_id}加入, 正在查询昵称...`);
   const memberName = await BotService.getGroupMemberName(group_id, user_id);
   if (!memberName) return true;
