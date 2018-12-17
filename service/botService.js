@@ -81,3 +81,18 @@ export async function getSenderRole(group_id, user_id) {
     return null;
   }
 }
+
+export async function getGroupMemberName(group_id, user_id) {
+  try {
+    const meta = await axios.post(
+      `${HOST}/get_group_member_info`,
+      { group_id, user_id }
+    );
+    let memberInfo = meta.data.data;
+    if (!memberInfo) return null;
+    return memberInfo.nickname;
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
+}

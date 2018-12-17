@@ -49,7 +49,8 @@ export default function (router) {
       .reduce((prev, curr) => {
         let pluginCates = curr.match(/[\w+\-?]+\.(.*).js/);
         if (pluginCates) {
-          pluginCates = pluginCates[1].split('.');
+          // 一个插件多场景运用, 如read-again.message.notice.js可理解为read-again可在message和notice两种post-type时触发
+          pluginCates = pluginCates[1].split('.'); 
           pluginCates.forEach(cate => {
             try {
               const plugin = require(`${pluginsPath}/${curr}`);
