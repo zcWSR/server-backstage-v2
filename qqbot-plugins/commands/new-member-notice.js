@@ -10,14 +10,20 @@ export function exec(params, body) {
   params = params.trim();
   if (!params) {
     if (groupConfigMap.newMemberNotice) {
-      BotService.sendGroup(group_id, `模板内容:\n'${groupConfigMap.newMemberNotice}'`);
+      BotService.sendGroup(
+        group_id,
+        `模板内容:\n'${groupConfigMap.newMemberNotice}'`
+      );
     } else {
-      BotService.sendGroup(group_id, `未设置自定义模板, 以下为默认模板:\n'${defaultTpl}'`);
+      BotService.sendGroup(
+        group_id,
+        `未设置自定义模板, 以下为默认模板:\n'${defaultTpl}'`
+      );
     }
     return;
   }
   let [key, value] = params.split(' ');
-  value = value.join('');
+  value = (value || []).join('');
   if (key !== 'set') {
     BotService.sendGroup(group_id, `非法参数'${key || 'null'}'`);
     return;
@@ -28,6 +34,7 @@ export function exec(params, body) {
   }
   groupConfigMap[group_id] = groupConfigMap[group_id] || {};
   groupConfigMap[group_id].newMemberNotice = value;
-  BotService.sendGroup('设置成功!');
+
+  BotService.sendGroup(group_id, '设置成功!');
   return;
 }
