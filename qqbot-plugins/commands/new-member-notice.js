@@ -8,8 +8,9 @@ const defaultTpl = `欢迎 \$\{name\} 加入本群! 请使用"!help"查看可用
 export async function exec(params, body) {
   const { group_id, user_id } = body;
   params = params.trim();
+  const config = groupConfigMap[group_id] || {};
   if (!params) {
-    if (groupConfigMap.newMemberNotice) {
+    if (config.newMemberNotice) {
       BotService.sendGroup(
         group_id,
         `模板内容:\n'${groupConfigMap.newMemberNotice}'`
@@ -35,8 +36,8 @@ export async function exec(params, body) {
     BotService.sendGroup(group_id, '设置失败, 仅管理员及以上拥有权限');
     return;
   }
-  groupConfigMap[group_id] = groupConfigMap[group_id] || {};
-  groupConfigMap[group_id].newMemberNotice = value;
+  config.newMemberNotice = value;
+  groupConfigMap[group_id] = config;
   BotService.sendGroup(group_id, '设置成功!');
   return;
 }
