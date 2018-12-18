@@ -13,7 +13,7 @@ export async function exec(params, body) {
     if (config.newMemberNotice) {
       BotService.sendGroup(
         group_id,
-        `模板内容:\n'${groupConfigMap.newMemberNotice}'`
+        `模板内容:\n'${config.newMemberNotice}'`
       );
     } else {
       BotService.sendGroup(
