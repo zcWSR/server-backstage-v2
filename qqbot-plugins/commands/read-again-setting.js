@@ -2,6 +2,7 @@ import * as BotService from '../../service/botService';
 import { groupConfigMap } from '../../routes/japari-qqbot/main';
 
 export const name = 'fd';
+export const shortInfo = '设置复读参数';
 export const info = `设置复读参数, '!fd rate 0.x'设置随机复读概率, '!fd rate'查看本群当前概率. 其余设置待更新`;
 
 export const paramMap = {

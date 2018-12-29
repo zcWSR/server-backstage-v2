@@ -2,6 +2,7 @@ import * as BotService from '../../service/botService';
 import * as OSUService from '../../service/osuService';
 
 export const name = 'bp';
+export const shortInfo = '查询osu! bp';
 export const info = `查询某特定账号的bp数据, '!bp 玩家名,第几bp,mode'来调用
 第几bp不传默认为第一bp, mode不写默认为osu!模式
 模式代码: (0 = osu!, 1 = Taiko, 2 = CtB, 3 = osu!mania)`;

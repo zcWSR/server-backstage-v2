@@ -2,6 +2,7 @@ import * as BotService from '../../service/botService';
 import { groupConfigMap } from '../../routes/japari-qqbot/main';
 
 export const name = 'newNotice';
+export const shortInfo = '配置入群提醒模板';
 export const info = `查看当前或设置当前群的入群提醒模板, '!newNotice'来查看, '!newNotice set xxx'来设置, 模板中可使用'\$\{name\}'来代替入群人昵称`;
 const defaultTpl = `欢迎 \$\{name\} 加入本群! 请使用"!help"查看可用指令~`;
 

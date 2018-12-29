@@ -3,6 +3,7 @@ import * as BotService from '../../service/botService';
 import logger from '../../utils/logger';
 
 export const name = 'recent';
+export const shortInfo = '查询osu!最近游玩记录';
 export const info = `查看所绑定账号的最近一次游玩记录, '!recent 最近的第几次'来调用, 第几次不传默认为最近一次, 如: '!recent 2' 或 '!recent'`;
 
 export async function exec(params, body) {
