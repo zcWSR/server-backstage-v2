@@ -4,7 +4,7 @@ export const name = 'pr';
 export const info = `舔`;
 
 export function noPr() {
-  return Math.random() < 0.02;
+  return Math.random() < 0.1;
 }
 
 export function exec(params, body) {
