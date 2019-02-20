@@ -67,7 +67,7 @@ export async function getUserByName(osuName, mode = 0) {
   let users = await fetch(GET_USER_URL, {
     u: osuName,
     type: 'string',
-    mode: 0
+    mode
   });
   if (!users || !users.length) {
     const message = `获取玩家'${osuName}'的信息失败, ${!users ? '请求出错' : '用户不存在'}`;
@@ -96,7 +96,7 @@ export async function getBP(userInfo, index) {
     b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    const message = `信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    const message = `信息失败, ${!mapsInfo ? '请求出错' : 'beatmap不存在'}, 请重试`
     logger.warn(`获取beatmap${playInfo.beatmap_id}${message}`);
     return `获取beatmap${message}`;
   }
@@ -122,7 +122,7 @@ export async function getRecent(userInfo, index) {
     b: playInfo.beatmap_id
   });
   if (!mapsInfo || !mapsInfo.length) {
-    const message = `信息失败, ${!users ? '请求出错' : 'beatmap不存在'}, 请重试`
+    const message = `信息失败, ${!mapsInfo ? '请求出错' : 'beatmap不存在'}, 请重试`
     logger.warn(`获取beatmap${playInfo.beatmap_id}${message}`)
     return `获取beatmap${message}`;
   }
