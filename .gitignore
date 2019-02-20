@@ -4,7 +4,6 @@ node_modules
 src/img/*
 yarn.lock
 yarn-error.log
-package-lock.json
 db/db.sqlite-journal
 bot.config.js
 qiniu.config.js
