@@ -63,7 +63,7 @@ export function getRuleFromString(ruleString) {
     days = [1, 2, 3, 4, 5];
   }
   return {
-    rule: `0 0 ${hours.join(',')} ? ? ${days.join(',')}`,
+    rule: `0 0 ${hours.join(',')} ? * ${days.join(',')}`,
     hours,
     days
   };
