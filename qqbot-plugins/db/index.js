@@ -52,11 +52,22 @@ async function createOSUMapTable() {
   });
 }
 
+async function createScheduleTable() {
+  if (await db.schema.hasTable('schedule')) return;
+  return await db.schema.createTable('schedule', table => {
+    table.integer('group_id').primary();
+    table.string('name');
+    table.string('rule');
+    table.string('text');
+  })
+}
+
 export async function createAllTable() {
   return await Promise.all([
     createQQBotTable(),
     createOSUBindTable(),
-    createOSUMapTable()
+    createOSUMapTable(),
+    createScheduleTable()
   ]).then(() => {
     logger.info('全ての plugin tables 準備完了');
   }).catch(err => {
