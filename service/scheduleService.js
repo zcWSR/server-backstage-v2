@@ -69,16 +69,20 @@ export function getRuleFromString(ruleString) {
   };
 }
 
+function addZero(number, wantLength) {
+  return `0000000000${number}`.slice(-wantLength);
+}
+
 function formatText(text) {
   const now = new Date();
   return text
     .replace(/\\n/g, '\n')
-    .replace(/\$\{hour\}/g, now.getHours())
-    .replace(/\$\{minute\}/g, now.getMinutes())
-    .replace(/\$\{second\}/g, now.getSeconds())
+    .replace(/\$\{hour\}/g, addZero(now.getHours(), 2))
+    .replace(/\$\{minute\}/g, addZero(now.getMinutes(), 2))
+    .replace(/\$\{second\}/g, addZero(now.getSeconds(), 2))
     .replace(/\$\{year\}/g, now.getFullYear())
-    .replace(/\$\{month\}/g, now.getMonth() + 1)
-    .replace(/\$\{date\}/g, now.getDate())
+    .replace(/\$\{month\}/g, addZero(now.getMonth() + 1, 2))
+    .replace(/\$\{date\}/g, addZero(now.getDate(), 2))
     .replace(/\$\{day\}/g, DAY_MAP[now.getDay()]);
 }
 
