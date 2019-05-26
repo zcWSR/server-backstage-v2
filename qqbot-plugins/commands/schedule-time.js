@@ -19,8 +19,8 @@ export async function exec(params, body) {
   }
   const [hourString, dayString = 'weekend'] = params;
   if (
-    hourString.match(/^([1-2]?[0-9],?)+$/) &&
-    dayString.match(/^(weekend|周末|everyday|每天|workday|工作日)|([1-7],?)+$/)
+    !(hourString.match(/^([1-2]?[0-9],?)+$/) &&
+    dayString.match(/^(weekend|周末|everyday|每天|workday|工作日)|([1-7],?)+$/))
   ) {
     BotService.sendGroup(group_id, '参数非法');
     return;
