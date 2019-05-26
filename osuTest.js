@@ -19,6 +19,9 @@ import schedule from 'node-schedule';
 // }).then((url) => {
 //   console.log(url);
 // })
-schedule.scheduleJob('* * 4,5,6 ? * 6,7', () => {
+schedule.scheduleJob('* * 13 ? * 6,7', () => {
   console.log('aaaa');
+});
+schedule.scheduleJob('* * 13,14 ? * 6,7', () => {
+  console.log('bbb');
 });

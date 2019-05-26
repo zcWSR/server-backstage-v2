@@ -77,21 +77,24 @@ function formatText(text) {
   const now = new Date();
   return text
     .replace(/\\n/g, '\n')
-    .replace(/\$\{hour\}/g, addZero(now.getHours(), 2))
-    .replace(/\$\{minute\}/g, addZero(now.getMinutes(), 2))
-    .replace(/\$\{second\}/g, addZero(now.getSeconds(), 2))
+    .replace(/\$\{hour\}/g, now.getHours())
+    .replace(/\$\{minute\}/g, now.getMinutes())
+    .replace(/\$\{second\}/g, now.getSeconds())
     .replace(/\$\{year\}/g, now.getFullYear())
-    .replace(/\$\{month\}/g, addZero(now.getMonth() + 1, 2))
-    .replace(/\$\{date\}/g, addZero(now.getDate(), 2))
+    .replace(/\$\{month\}/g, now.getMonth() + 1)
+    .replace(/\$\{date\}/g, now.getDate())
     .replace(/\$\{day\}/g, DAY_MAP[now.getDay()]);
 }
 
 export function sendText(groupId, text) {
-  BotService.sendGroup(groupId, formatText(text));
+  const formatedText = formatText(text);
+  logger.info('auto sendText to', groupId, formatedText);
+  BotService.sendGroup(groupId, formatedText);
 }
 
 export function runSchedule(groupId, name, ruleString, text) {
   const { hours, days, rule } = getRuleFromString(ruleString);
+  logger.info(`rule '${rule}'`);
   scheduleJob(name, rule, sendText.bind(null, groupId, text));
   return { hours, days };
 }
@@ -105,7 +108,7 @@ export async function runAllSchedule() {
       logger.info(`run schedule '${name}'`);
     });
   } catch(e) {
-    console.error(e);
+    logger.error(e);
   } finally {
     logger.info('start all schedule');
   }
