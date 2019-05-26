@@ -1,6 +1,6 @@
 import logger from '../utils/logger';
 import { db } from '../qqbot-plugins/db';
-import schedule, { scheduleJob } from 'node-schedule';
+import schedule, { scheduleJob } from 'node-schedule-tz';
 import * as BotService from '../service/botService';
 
 const DAY_MAP = {
@@ -95,7 +95,7 @@ export function sendText(groupId, text) {
 export function runSchedule(groupId, name, ruleString, text) {
   const { hours, days, rule } = getRuleFromString(ruleString);
   logger.info(`rule '${rule}'`);
-  scheduleJob(name, rule, sendText.bind(null, groupId, text));
+  scheduleJob(name, rule, 'Asia/Shanghai', sendText.bind(null, groupId, text));
   return { hours, days };
 }
 

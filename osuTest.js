@@ -2,7 +2,7 @@ import { createAllTable } from './qqbot-plugins/db';
 import { getRecent, getBP, getPP, sendInfo } from './service/osuService';
 import { numberToOsuModes } from './utils/osuUtils';
 import { getHso } from './qqbot-plugins/commands/get-konachan-random';
-import schedule from 'node-schedule';
+import schedule from 'node-schedule-tz';
 // createAllTable().then(async () => {
 //   const index = 4
 //   const info = await getBP({
@@ -19,9 +19,9 @@ import schedule from 'node-schedule';
 // }).then((url) => {
 //   console.log(url);
 // })
-schedule.scheduleJob('* * 13 ? * 6,7', () => {
+schedule.scheduleJob('job a','* * 17 ? * 6,7', 'Asia/Shanghai', () => {
   console.log('aaaa');
 });
-schedule.scheduleJob('* * 13,14 ? * 6,7', () => {
+schedule.scheduleJob('job b', '* * 17,18 ? * 6,7', 'Asia/Shanghai', () => {
   console.log('bbb');
 });
