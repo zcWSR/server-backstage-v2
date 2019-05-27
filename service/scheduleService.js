@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import logger from '../utils/logger';
 import { db } from '../qqbot-plugins/db';
 import schedule, { scheduleJob } from 'node-schedule-tz';
@@ -74,16 +75,16 @@ function addZero(number, wantLength) {
 }
 
 function formatText(text) {
-  const now = new Date();
+  const now = moment(new Date).tz('Asia/Shanghai');
   return text
     .replace(/\\n/g, '\n')
-    .replace(/\$\{hour\}/g, now.getHours())
-    .replace(/\$\{minute\}/g, now.getMinutes())
-    .replace(/\$\{second\}/g, now.getSeconds())
-    .replace(/\$\{year\}/g, now.getFullYear())
-    .replace(/\$\{month\}/g, now.getMonth() + 1)
-    .replace(/\$\{date\}/g, now.getDate())
-    .replace(/\$\{day\}/g, DAY_MAP[now.getDay()]);
+    .replace(/\$\{hour\}/g, now.hours())
+    .replace(/\$\{minute\}/g, now.minutes())
+    .replace(/\$\{second\}/g, now.seconds())
+    .replace(/\$\{year\}/g, now.year())
+    .replace(/\$\{month\}/g, now.month() + 1)
+    .replace(/\$\{date\}/g, now.date())
+    .replace(/\$\{day\}/g, DAY_MAP[now.day()]);
 }
 
 export function sendText(groupId, text) {
