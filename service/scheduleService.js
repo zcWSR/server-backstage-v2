@@ -11,7 +11,8 @@ const DAY_MAP = {
   3: '星期三',
   4: '星期四',
   5: '星期五',
-  6: '星期六'
+  6: '星期六',
+  7: '星期天',
 };
 
 export function getAllSchedule() {
@@ -44,6 +45,7 @@ export function getRuleFromString(ruleString) {
   if (!hours.length) {
     hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
   }
+  hours = hours.sort();
   if (dayString === 'weekend' || dayString === '周末') {
     dayString = '6,7';
   }
@@ -63,6 +65,7 @@ export function getRuleFromString(ruleString) {
   if (!days.length) {
     days = [1, 2, 3, 4, 5];
   }
+  days = days.sort();
   return {
     rule: `0 0 ${hours.join(',')} ? * ${days.join(',')}`,
     hours,
@@ -165,7 +168,7 @@ export function ruleToShownString(hours, days) {
 
   if (days[0] === 6 && days.length === 2) {
     result = '每周末的';
-  } else if (days[0] === 1 && days.length === 5) {
+  } else if (days[0] === 1 && days.indexOf(6) === -1 && days.indexOf(7) === -1 && days.length === 5) {
     result = '每周工作日的';
   } else if (days[0] == 1 && days.length === 7) {
     result = '每天的'
@@ -173,7 +176,7 @@ export function ruleToShownString(hours, days) {
     result =
       days.reduce((prev, current) => {
         return `${prev}${DAY_MAP[current]}、`;
-      }, '每周') + '的'.slice(0, length - 1);
+      }, '每周').slice(0, - 1) + '的';
   }
 
   return hours.reduce((prev, current) => {
