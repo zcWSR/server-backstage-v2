@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { db } from '../qqbot-plugins/db';
 import logger from '../utils/logger';
-import { BOT_SERVER } from './bot.config';
+import { BOT_SERVER, SUPER_ADMIN } from './bot.config';
 
 const HOST = process.env.ENV === 'dev' ? 'http://127.0.0.1:5000':  BOT_SERVER;
 
@@ -52,15 +52,22 @@ export function sendGroup(group_id, message) {
   axios.post(`${HOST}/send_group_msg`, { group_id, message });
 }
 
+export function isSenderSuperAdmin(user_id) {
+  return SUPER_ADMIN === +user_id;
+}
+
 export async function isSenderOwner(group_id, user_id) {
+  if (isSenderSuperAdmin(user_id)) return true;
   return (await getSenderRole(group_id, user_id)) === 'owner';
 }
 
 export async function isSenderAdmin(group_id, user_id) {
+  if (isSenderSuperAdmin(user_id)) return true;
   return (await getSenderRole(group_id, user_id)) === 'admin';
 }
 
 export async function isSenderOwnerOrAdmin(group_id, user_id) {
+  if (isSenderSuperAdmin(user_id)) return true;
   const role = await getSenderRole(group_id, user_id);
   return role === 'admin' || role === 'owner';
 }
