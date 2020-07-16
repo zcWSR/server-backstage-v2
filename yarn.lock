@@ -2388,13 +2388,9 @@ load-bmfont@^1.2.3:
     xhr "^2.0.1"
     xtend "^4.0.0"
 
-lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.10:
-  version "4.17.10"
-  resolved "http://registry.npm.taobao.org/lodash/download/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
-
-lodash@^4.13.1, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0:
-  version "4.17.5"
-  resolved "http://registry.npm.taobao.org/lodash/download/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
+lodash@^4.0.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0:
+  version "4.17.19"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
 
 log4js@^2.9.0:
   version "2.9.0"
@@ -2572,6 +2568,12 @@ moment-timezone@^0.5.0:
   dependencies:
     moment ">= 2.9.0"
 
+moment-timezone@^0.5.25:
+  version "0.5.31"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
+  dependencies:
+    moment ">= 2.9.0"
+
 "moment@>= 2.9.0":
   version "2.22.2"
   resolved "http://registry.npm.taobao.org/moment/download/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
@@ -2672,9 +2674,9 @@ node-pre-gyp@~0.6.38:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node-schedule@^1.3.0:
-  version "1.3.0"
-  resolved "http://registry.npm.taobao.org/node-schedule/download/node-schedule-1.3.0.tgz#e7a7e816a7f2550d5b170bd106e765db28bdf030"
+node-schedule-tz@^1.2.1-4:
+  version "1.2.1-4"
+  resolved "https://registry.yarnpkg.com/node-schedule-tz/-/node-schedule-tz-1.2.1-4.tgz#6c971cb4628dadc5723a1169368a6ec273942f24"
   dependencies:
     cron-parser "^2.4.0"
     long-timeout "0.1.1"
@@ -2824,9 +2826,9 @@ object.pick@^1.2.0, object.pick@^1.3.0:
   dependencies:
     isobject "^3.0.1"
 
-ojsama@^1.0.17:
-  version "1.0.17"
-  resolved "http://registry.npm.taobao.org/ojsama/download/ojsama-1.0.17.tgz#1b2e4151d545205a1ae752ddf7cdde1fd3a55132"
+ojsama@^1.2.1:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/ojsama/-/ojsama-1.2.5.tgz#45993864dc4ff5b4164452365c771cefc2e808ca"
 
 on-finished@^2.3.0, on-finished@~2.3.0:
   version "2.3.0"
