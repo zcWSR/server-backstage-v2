@@ -34,7 +34,7 @@
     "express-session": "^1.15.6",
     "images": "^3.0.1",
     "inquirer": "^5.0.1",
-    "knex": "^0.14.2",
+    "knex": "^0.21.15",
     "log4js": "^2.9.0",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.25",
@@ -46,7 +46,7 @@
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "require-all": "^2.2.0",
-    "sqlite3": "^3.1.4",
+    "sqlite3": "^5.0.1",
     "text-table": "^0.2.0",
     "uuid": "^3.1.0"
   }

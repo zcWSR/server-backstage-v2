@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import fs from 'fs';
 const multer = require('multer');
 
 import loginCheck from '../../middleware/loginCheckMiddleware';
