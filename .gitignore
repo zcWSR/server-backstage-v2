@@ -4,7 +4,9 @@ node_modules
 src/img/*
 yarn.lock
 yarn-error.log
-db/db.sqlite-journal
+package-lock.json
+db.sqlite
+db.sqlite3
 bot.config.js
 qiniu.config.js
 osu.config.js

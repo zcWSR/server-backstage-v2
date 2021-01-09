@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-import RedisStore from 'connect-redis';
 import logger from './utils/logger';
 
 import { setRoutes } from './utils/route';
@@ -27,11 +26,6 @@ function initServer() {
   app.use(session({
     resave: true, // 即使 session 没有被修改，也保存 session 值，默认为 true
     saveUninitialized: true,
-    // store: new RedisStore({
-    //   host: '127.0.0.1',
-    //   port: 6379,
-    //   passwd: ''
-    // }),
     secret: COOKIE_SECRET,
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 10 },
     rolling: true
