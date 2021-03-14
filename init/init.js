@@ -2,7 +2,6 @@ import uuid from 'uuid/v1';
 import moment from 'moment';
 import { createAllTables, db } from '../db';
 import { insertSome } from '../service/postService';
-import { queryOneById } from '../service/articleService';
 const json = require('./posts.json');
 
 const imgList = [];
