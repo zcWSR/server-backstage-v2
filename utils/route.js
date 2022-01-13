@@ -5,9 +5,6 @@ import { Router } from 'express';
 import express from 'express';
 import logger from '../utils/logger';
 
-import { db } from '../db';
-
-
 /**
  * 自动扫描routes下的文件夹,并按文件夹对路由模块进行挂载
  * @param {express} app express对象
@@ -23,8 +20,10 @@ export function setRoutes(app, prefix) {
     for (let routerName of routerNames) {
         const router = Router();
         const dirPath = path.resolve(__dirname, '../routes/', routerName || 'main');
-        execRequires(requireAll(dirPath), router);
-        app.use(`${prefix ? '/' + prefix : ''}/${routerName}`, router);
+        if (fs.lstatSync(dirPath).isDirectory()) {
+            execRequires(requireAll(dirPath), router);
+            app.use(`${prefix ? '/' + prefix : ''}/${routerName}`, router);
+        }
     }
     logger.info('路由扫描完成');
 }

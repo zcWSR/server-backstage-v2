@@ -1,4 +1,4 @@
-import { get } from 'http';
+import { get } from 'https';
 
 const host = 'konachan.com';
 
@@ -21,22 +21,21 @@ function getParamString(query) {
 }
 
 function jsonClient(url) {
+  console.log(host + url)
   return new Promise((resolve, reject) => {
     get({
       hostname: host,
       path: url,
-      port: '80',
+      port: 443,
       method: 'GET',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
       }
     },
       (res) => {
         const { statusCode } = res;
         const contentType = res.headers['content-type'];
-        if (statusCode !== 200)
-          resolve({ code: statusCode, error: 'proxy error' });
-        else if (/^application\/json^/.test(contentType)) {
+        if (/^application\/json^/.test(contentType)) {
           resolve({
             code: statusCode, error: `Invalid content-type.\n` +
               `Expected application/json but received ${contentType}`
@@ -47,7 +46,11 @@ function jsonClient(url) {
         let rawData = '';
         res.on('data', (chunk) => { rawData += chunk });
         res.on('end', () => {
-          resolve({ code: statusCode, result: JSON.parse(rawData) });
+          try {
+            resolve({ code: statusCode, result: JSON.parse(rawData) });
+          } catch (e) {
+            resolve({ code: statusCode, error: rawData });
+          }
         })
       })
   })
