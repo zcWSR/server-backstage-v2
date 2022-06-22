@@ -42,7 +42,7 @@
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "require-all": "^2.2.0",
-    "sqlite3": "^5.0.1",
+    "sqlite3": "^5.0.3",
     "text-table": "^0.2.0",
     "uuid": "^3.1.0"
   }
