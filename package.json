@@ -30,7 +30,7 @@
     "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
     "current-processes": "^0.2.1",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "express-session": "^1.15.6",
     "inquirer": "^5.0.1",
     "knex": "^0.21.15",
